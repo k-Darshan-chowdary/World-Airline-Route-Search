@@ -39,10 +39,16 @@ RequiredStopsResult searchRequiredStops(const Graph& graph, CityId from,
     // Stable policy for equal flight counts: prefer B -> C.
     const bool chooseBC = orderBC && (!orderCB || orderBC->size() <= orderCB->size());
     const Path& path = chooseBC ? *orderBC : *orderCB;
-    const int flights = static_cast<int>(path.size() - 1);
-    return {RequiredStopsStatus::Found, path,
-            chooseBC ? std::vector<CityId>{viaB,viaC} : std::vector<CityId>{viaC,viaB},
-            flights, std::max(flights - 1, 0)};
+    // Three individually simple segments can together exceed an int's length.
+    const auto flights = static_cast<std::int64_t>(path.size() - 1);
+    std::vector<CityId> encountered;
+    for (const auto city : path) {
+        if ((city == viaB || city == viaC) &&
+            std::find(encountered.begin(), encountered.end(), city) == encountered.end())
+            encountered.push_back(city);
+    }
+    return {RequiredStopsStatus::Found, path, encountered,
+            flights, std::max<std::int64_t>(flights - 1, 0)};
 }
 
 RequiredStopsResult searchRequiredStops(const Graph& graph, const std::string& from,

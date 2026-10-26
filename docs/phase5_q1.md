@@ -3,8 +3,10 @@
 Person 1's Question 1 is implemented on `feature/phase5-q1-route-search`,
 starting at merged Phase 4 `main` commit
 `4cbf979a2306eb63130e00333e09371fca219b0a`. Phases 1–4 are preserved.
-Phase 5 is submitted for draft review; merging requires separate approval.
-Question 2, other teammates' algorithms, GUI and maps remain future work.
+Phase 5 is merged through PR #6 at `0bf82691a1365da02a052c7bb19fe0533fdd23a8`.
+Question 2 is now covered in [Phase 6](phase6_q2.md); the evidence below records
+the original Phase 5 validation. Other teammates' algorithms, GUI and maps
+remain future work.
 
 ## Assignment and semantics
 

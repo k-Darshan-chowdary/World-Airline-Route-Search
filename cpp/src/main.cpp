@@ -1,6 +1,7 @@
 #include "BFS.h"
 #include "GraphLoader.h"
 #include "RouteSearch.h"
+#include "RequiredStops.h"
 
 #include <charconv>
 #include <cstdint>
@@ -55,12 +56,22 @@ const char* statusName(airline::RouteSearchStatus status) {
     throw std::logic_error("unknown route status");
 }
 
+void printJsonCities(const airline::Graph& graph, const std::vector<airline::CityId>& path) {
+    std::cout << '[';
+    for (std::size_t i = 0; i < path.size(); ++i) {
+        if (i) std::cout << ',';
+        const auto id = path[i];
+        std::cout << "{\"id\":" << id << ",\"city\":" << jsonString(graph.cityName(id)) << '}';
+    }
+    std::cout << ']';
+}
+
 int run(const std::vector<std::string>& args) {
     bool json = false;
     for (const auto& arg : args) if (arg == "--json") json = true;
     try {
         std::filesystem::path directory = "data/generated/2026-q3";
-        std::optional<std::string> from, to;
+        std::optional<std::string> from, to, viaB, viaC;
         std::optional<std::size_t> expectedCities, expectedRoutes;
         std::optional<std::int64_t> limit;
         for (std::size_t i = 0; i < args.size(); ++i) {
@@ -68,9 +79,10 @@ int run(const std::vector<std::string>& args) {
             if (argument == "--help") {
                 std::cout << "Usage: airline_graph [--data-dir DIR] [--expect-cities N] "
                              "[--expect-routes N] [--from 'City, Country' --to 'City, Country' "
-                             "[--max-connections X [--json]]]\n"
+                             "[--max-connections X | --via-b 'City, Country' --via-c 'City, Country'] [--json]]\n"
                              "Q1 requires connections < X; direct flight = 0 connections.\n"
-                             "X must be decimal digits in [0, 9223372036854775807].\n";
+                             "X must be decimal digits in [0, 9223372036854775807].\n"
+                             "Q2 visits both required cities in either order, minimizing flights; repeated visits are allowed.\n";
                 return 0;
             }
             if (argument == "--json") continue;
@@ -79,6 +91,8 @@ int run(const std::vector<std::string>& args) {
             if (argument == "--data-dir") directory = std::filesystem::u8path(value);
             else if (argument == "--from") from = value;
             else if (argument == "--to") to = value;
+            else if (argument == "--via-b") viaB = value;
+            else if (argument == "--via-c") viaC = value;
             else if (argument == "--expect-cities") expectedCities = nonnegative<std::size_t>(value, argument);
             else if (argument == "--expect-routes") expectedRoutes = nonnegative<std::size_t>(value, argument);
             else if (argument == "--max-connections") limit = nonnegative<std::int64_t>(value, argument);
@@ -88,7 +102,11 @@ int run(const std::vector<std::string>& args) {
             throw std::invalid_argument("--from and --to must be supplied together");
         }
         if (limit && !from) throw std::invalid_argument("--max-connections requires --from and --to");
-        if (json && !limit) throw std::invalid_argument("--json requires a Q1 query with --max-connections");
+        if (viaB.has_value() != viaC.has_value())
+            throw std::invalid_argument("--via-b and --via-c must be supplied together");
+        if (viaB && !from) throw std::invalid_argument("Q2 requires --from and --to");
+        if (viaB && limit) throw std::invalid_argument("Q2 cannot be combined with --max-connections");
+        if (json && !limit && !viaB) throw std::invalid_argument("--json requires a Q1 or Q2 query");
         const auto graph = airline::loadGraph(directory);
         if ((expectedCities && graph.cityCount() != *expectedCities) ||
             (expectedRoutes && graph.routeCount() != *expectedRoutes)) {
@@ -99,7 +117,33 @@ int run(const std::vector<std::string>& args) {
                       << graph.routeCount() << " directed routes\n";
             std::cout << "Historical observed connectivity; not current/bookable flights.\n";
         }
-        if (limit) {
+        if (viaB) {
+            const auto result = airline::searchRequiredStops(graph, *from, *viaB, *viaC, *to);
+            const bool found = result.status == airline::RequiredStopsStatus::Found;
+            if (json) {
+                std::cout << "{\"schema_version\":1,\"query\":\"q2\",\"status\":"
+                          << jsonString(found ? "found" : "unreachable")
+                          << ",\"from\":" << jsonString(*from) << ",\"to\":" << jsonString(*to)
+                          << ",\"via_b\":" << jsonString(*viaB) << ",\"via_c\":" << jsonString(*viaC)
+                          << ",\"flights\":" << (result.flights ? std::to_string(*result.flights) : "null")
+                          << ",\"connections\":" << (result.connections ? std::to_string(*result.connections) : "null")
+                          << ",\"historical_observed_connectivity\":true,\"route\":";
+                printJsonCities(graph, result.path);
+                std::cout << ",\"waypoint_order\":";
+                printJsonCities(graph, result.waypointOrder);
+                std::cout << "}\n";
+            } else if (found) {
+                std::cout << "Shortest route through required cities (" << *result.flights << " flights; "
+                          << *result.connections << " connections): ";
+                for (std::size_t i = 0; i < result.path.size(); ++i) {
+                    if (i) std::cout << " -> ";
+                    std::cout << graph.cityName(result.path[i]);
+                }
+                std::cout << '\n';
+            } else {
+                std::cout << "No directed route through both required cities exists.\n";
+            }
+        } else if (limit) {
             const auto result = airline::searchRoute(graph, *from, *to, *limit);
             if (json) {
                 std::cout << "{\"schema_version\":1,\"query\":\"q1\",\"status\":" << jsonString(statusName(result.status))
@@ -107,13 +151,9 @@ int run(const std::vector<std::string>& args) {
                           << ",\"exclusive_connection_limit\":" << *limit
                           << ",\"flights\":" << (result.flights ? std::to_string(*result.flights) : "null")
                           << ",\"connections\":" << (result.connections ? std::to_string(*result.connections) : "null")
-                          << ",\"historical_observed_connectivity\":true,\"route\":[";
-                for (std::size_t i = 0; i < result.path.size(); ++i) {
-                    if (i) std::cout << ',';
-                    const auto id = result.path[i];
-                    std::cout << "{\"id\":" << id << ",\"city\":" << jsonString(graph.cityName(id)) << '}';
-                }
-                std::cout << "]}\n";
+                          << ",\"historical_observed_connectivity\":true,\"route\":";
+                printJsonCities(graph, result.path);
+                std::cout << "}\n";
             } else if (result.status == airline::RouteSearchStatus::Found) {
                 std::cout << "Shortest qualifying route (" << *result.flights << " flights; "
                           << *result.connections << " connections; connections < " << *limit << "): ";
