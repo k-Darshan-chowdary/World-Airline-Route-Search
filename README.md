@@ -1,6 +1,21 @@
 # World-Airline-Route-Search
 C++ and Python airline route search application using graph algorithms and interactive world map visualization.
 
+## Phase 4: C++17 directed graph and BFS
+
+The existing Phase 4 implementation is completed on
+`feature/phase4-cpp-directed-graph`: checked city IDs, coordinates, directed
+adjacency lists, strict UTF-8 dataset loading, and unweighted BFS with parent
+paths and unreachable results. Reverse routes exist only when present in the
+input. This phase does not implement Questions 1/2 or GUI/map features.
+
+See [build, CLI and test instructions](docs/phase4_cpp.md) and
+[actual compilation/test evidence](docs/phase4_validation.md).
+Debug and Release builds pass the 12-city/20-route sample and the checksum-locked
+819-city/19,283-route dataset, including BFS from every city. CI tests C++17 on
+Linux and Windows in both configurations alongside all preserved Python tests.
+The following Phase 3 and Phase 1/2 sections retain the earlier setup history.
+
 ## Phase 3: real-world dataset importer
 
 **All three teammates:** start with [TEAM_DATASET_SETUP.md](TEAM_DATASET_SETUP.md).
@@ -23,7 +38,8 @@ See [download/import instructions, schemas, filtering and licensing](docs/phase3
 and the [locked source manifest](data/sources.json). Large raw and generated
 files are ignored. The generated `flight.txt` and `cities.tsv` preserve the
 Phase 2 format and add airport/airline provenance and a reproducibility report.
-Graph loading, `Graph.cpp`, BFS and GUI/map code come after this phase.
+Graph loading, `Graph.cpp` and BFS are now completed in Phase 4 above;
+GUI/map code remains future work.
 
 Verified full import: **819 cities, 19,283 directed routes, 882 airports,
 85 countries/territories** after conservative filtering of 16,018,874 input
