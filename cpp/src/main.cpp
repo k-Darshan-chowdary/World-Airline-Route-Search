@@ -2,6 +2,7 @@
 #include "GraphLoader.h"
 
 #include <filesystem>
+#include <charconv>
 #include <iostream>
 #include <optional>
 #include <stdexcept>
@@ -27,9 +28,11 @@ int main(int argc, char** argv) {
             else if (argument == "--from") from = value;
             else if (argument == "--to") to = value;
             else if (argument == "--expect-cities" || argument == "--expect-routes") {
-                std::size_t consumed = 0;
-                const unsigned long long parsed = std::stoull(value, &consumed);
-                if (consumed != value.size()) throw std::invalid_argument("invalid count");
+                std::size_t parsed = 0;
+                const auto result = std::from_chars(value.data(), value.data() + value.size(), parsed);
+                if (result.ec != std::errc{} || result.ptr != value.data() + value.size()) {
+                    throw std::invalid_argument("invalid nonnegative count for " + argument);
+                }
                 if (argument == "--expect-cities") expectedCities = parsed;
                 else expectedRoutes = parsed;
             } else throw std::invalid_argument("unknown argument " + argument);
@@ -44,6 +47,7 @@ int main(int argc, char** argv) {
         }
         std::cout << "PASS: " << graph.cityCount() << " cities; "
                   << graph.routeCount() << " directed routes\n";
+        std::cout << "Historical observed connectivity; not current/bookable flights.\n";
         if (from) {
             const auto source = graph.cityId(*from);
             const auto destination = graph.cityId(*to);
@@ -61,7 +65,6 @@ int main(int argc, char** argv) {
             }
             std::cout << '\n';
         }
-        std::cout << "Historical observed connectivity; not current/bookable flights.\n";
         return 0;
     } catch (const std::exception& ex) {
         std::cerr << "ERROR: " << ex.what() << '\n';

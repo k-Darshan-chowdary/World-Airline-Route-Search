@@ -15,6 +15,8 @@ struct BFSResult {
 };
 
 // Single-source shortest paths in O(V + E) for unweighted directed routes.
+// Ties follow adjacency order; loadGraph sorts neighbors by stable city ID.
+// Throws std::out_of_range for invalid source/destination IDs.
 BFSResult bfs(const Graph& graph, CityId source);
 
 }  // namespace airline

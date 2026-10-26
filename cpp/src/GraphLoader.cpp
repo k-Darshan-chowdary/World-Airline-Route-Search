@@ -2,6 +2,9 @@
 
 #include <cmath>
 #include <fstream>
+#include <locale>
+#include <regex>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -14,9 +17,37 @@ std::runtime_error error(const std::filesystem::path& file, std::size_t line,
     return std::runtime_error(file.string() + ":" + std::to_string(line) + ": " + detail);
 }
 
-void normalizeLine(std::string& line, bool first) {
+bool validUtf8(const std::string& text) {
+    for (std::size_t i = 0; i < text.size();) {
+        const auto lead = static_cast<unsigned char>(text[i++]);
+        if (lead < 0x80) {
+            if (lead < 0x20 && lead != '\t') return false;
+            if (lead == 0x7f) return false;
+            continue;
+        }
+        unsigned code = 0;
+        unsigned minimum = 0;
+        int remaining = 0;
+        if (lead >= 0xc2 && lead <= 0xdf) { code = lead & 0x1f; minimum = 0x80; remaining = 1; }
+        else if (lead >= 0xe0 && lead <= 0xef) { code = lead & 0x0f; minimum = 0x800; remaining = 2; }
+        else if (lead >= 0xf0 && lead <= 0xf4) { code = lead & 0x07; minimum = 0x10000; remaining = 3; }
+        else return false;
+        while (remaining--) {
+            if (i == text.size()) return false;
+            const auto next = static_cast<unsigned char>(text[i++]);
+            if ((next & 0xc0) != 0x80) return false;
+            code = (code << 6) | (next & 0x3f);
+        }
+        if (code < minimum || code > 0x10ffff || (code >= 0xd800 && code <= 0xdfff)) return false;
+    }
+    return true;
+}
+
+void normalizeLine(std::string& line, bool first, const std::filesystem::path& file,
+                   std::size_t number) {
     if (!line.empty() && line.back() == '\r') line.pop_back();
     if (first && line.compare(0, 3, "\xEF\xBB\xBF") == 0) line.erase(0, 3);
+    if (!validUtf8(line)) throw error(file, number, "invalid UTF-8 or control character");
 }
 
 std::vector<std::string> fields(const std::string& line) {
@@ -38,28 +69,24 @@ bool validCity(const std::string& name) {
            name.find(',') == comma && name.find(',', comma + 1) == std::string::npos &&
            name.find_first_of("\t\r\n") == std::string::npos &&
            name.front() != ' ' && name.back() != ' ' &&
-           name[comma - 1] != ' ';
+           name[comma - 1] != ' ' && name[comma + 2] != ' ' && name[comma + 2] != '#';
 }
 
 double parseCoordinate(const std::string& text, bool latitude,
                        const std::filesystem::path& file, std::size_t line) {
-    if (text.empty() || text.front() == ' ' || text.back() == ' ') {
+    static const std::regex decimal(R"([+-]?([0-9]+(\.[0-9]*)?|\.[0-9]+)([eE][+-]?[0-9]+)?)");
+    if (!std::regex_match(text, decimal)) {
         throw error(file, line, "invalid coordinate");
     }
-    try {
-        std::size_t consumed = 0;
-        const double number = std::stod(text, &consumed);
-        const double bound = latitude ? 90.0 : 180.0;
-        if (consumed != text.size() || !std::isfinite(number) ||
-            number < -bound || number > bound) {
-            throw error(file, line, "coordinate outside valid bounds");
-        }
-        return number;
-    } catch (const std::invalid_argument&) {
-        throw error(file, line, "coordinate is not numeric");
-    } catch (const std::out_of_range&) {
+    std::istringstream input(text);
+    input.imbue(std::locale::classic());
+    double number = 0;
+    input >> number;
+    const double bound = latitude ? 90.0 : 180.0;
+    if (!input || !std::isfinite(number) || number < -bound || number > bound) {
         throw error(file, line, "coordinate outside valid bounds");
     }
+    return number;
 }
 
 std::ifstream inputFile(const std::filesystem::path& path) {
@@ -77,14 +104,14 @@ Graph loadGraph(const std::filesystem::path& directory) {
     Graph graph;
     std::string line;
     if (!std::getline(cities, line)) throw error(citiesPath, 1, "missing TSV header");
-    normalizeLine(line, true);
+    normalizeLine(line, true, citiesPath, 1);
     if (line != "city\tlatitude\tlongitude") {
         throw error(citiesPath, 1, "expected city<TAB>latitude<TAB>longitude header");
     }
     std::size_t lineNumber = 1;
     while (std::getline(cities, line)) {
         ++lineNumber;
-        normalizeLine(line, false);
+        normalizeLine(line, false, citiesPath, lineNumber);
         const auto cols = fields(line);
         if (cols.size() != 3 || !validCity(cols[0])) {
             throw error(citiesPath, lineNumber, "invalid city record or label");
@@ -106,7 +133,7 @@ Graph loadGraph(const std::filesystem::path& directory) {
     lineNumber = 0;
     while (std::getline(routes, line)) {
         ++lineNumber;
-        normalizeLine(line, lineNumber == 1);
+        normalizeLine(line, lineNumber == 1, routesPath, lineNumber);
         const auto nonSpace = line.find_first_not_of(" \t");
         if (nonSpace == std::string::npos || line[nonSpace] == '#') continue;
         const auto cols = fields(line);
@@ -132,7 +159,7 @@ Graph loadGraph(const std::filesystem::path& directory) {
     if (!graph.routeCount()) throw error(routesPath, lineNumber, "no routes");
     for (std::size_t id = 0; id < used.size(); ++id) {
         if (!used[id]) {
-            throw std::runtime_error("unused city in metadata: " + graph.cityName(static_cast<CityId>(id)));
+            throw error(citiesPath, id + 2, "unused city in metadata: " + graph.cityName(static_cast<CityId>(id)));
         }
     }
     graph.sortNeighbors();

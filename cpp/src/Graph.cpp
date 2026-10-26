@@ -14,7 +14,9 @@ void Graph::checkId(CityId id) const {
 }
 
 CityId Graph::addCity(const std::string& name, Coordinates coordinates) {
-    if (name.empty() || !std::isfinite(coordinates.latitude) ||
+    if (name.empty() || name.find_first_not_of(" \t\r\n\v\f") == std::string::npos ||
+        name.find_first_of("\t\r\n") != std::string::npos ||
+        !std::isfinite(coordinates.latitude) ||
         !std::isfinite(coordinates.longitude) ||
         coordinates.latitude < -90 || coordinates.latitude > 90 ||
         coordinates.longitude < -180 || coordinates.longitude > 180) {
