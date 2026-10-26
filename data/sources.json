@@ -1,0 +1,44 @@
+{
+  "ourairports_commit": "d97df1673cc5ba61a09b17ab5936091a669a04ca",
+  "files": {
+    "airports.csv": {
+      "url": "https://raw.githubusercontent.com/davidmegginson/ourairports-data/d97df1673cc5ba61a09b17ab5936091a669a04ca/airports.csv",
+      "bytes": 12752219,
+      "sha256": "27c6500d0a742edece15c5aaf960e08c01df0d4356c5c86255897b5d3749ad3b"
+    },
+    "countries.csv": {
+      "url": "https://raw.githubusercontent.com/davidmegginson/ourairports-data/d97df1673cc5ba61a09b17ab5936091a669a04ca/countries.csv",
+      "bytes": 24583,
+      "sha256": "2a9dbee691125b0cdb8ceb5fe227c48c903f99c488963b8e53e2ab366521c639"
+    },
+    "README-MrAirspace.md": {
+      "url": "https://raw.githubusercontent.com/MrAirspace/aircraft-flight-schedules/d4906de/README.md",
+      "bytes": 17594,
+      "sha256": "6fb086614cbf82e21125a64f9895390443027c0c3204151e4e52ccdd0ffd5d52"
+    },
+    "LICENSE-ODbL.txt": {
+      "url": "https://raw.githubusercontent.com/MrAirspace/aircraft-flight-schedules/d4906de/LICENSE-ODbL.txt",
+      "bytes": 25241,
+      "sha256": "d93f996262c15e7cf9d6b54f9f48e3f9d8b9c3a47fa2308dc8ef1f0f5cb88611"
+    },
+    "flights.parquet": {
+      "url": "https://github.com/MrAirspace/aircraft-flight-schedules/releases/download/aircraft_flight_schedules_2026_quarter3/2026_Q3_detailed_github.parquet",
+      "bytes": 1026954012,
+      "sha256": "d7cf25ffb128b4ceade6a2b898e6901f829ebf8ac065985fcdaf1787ffa1d1c1"
+    }
+  },
+  "verified_on": "2026-10-26",
+  "flight_source": "MrAirspace / aircraft-flight-schedules, derived from ADSB.lol",
+  "release_tag": "aircraft_flight_schedules_2026_quarter3",
+  "published_at": "2026-10-13T18:43:08Z",
+  "period_start_utc": "2026-07-01T00:00:00+00:00",
+  "period_end_exclusive_utc": "2026-10-01T00:00:00+00:00",
+  "license": "ODbL-1.0 (flights); Public Domain (OurAirports)",
+  "release_url": "https://github.com/MrAirspace/aircraft-flight-schedules/releases/tag/aircraft_flight_schedules_2026_quarter3",
+  "airport_terms_url": "https://ourairports.com/data/",
+  "notices": [
+    "Observed historical flights, not live schedules; incomplete and geographically uneven receiver coverage.",
+    "Airline is inferred from callsign, not verified operating carrier.",
+    "Airport candidates are inferred; strict filtering further reduces coverage."
+  ]
+}
