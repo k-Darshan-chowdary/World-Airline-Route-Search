@@ -289,7 +289,7 @@ def run(raw_dir, output, manifest_path, batch_size=32768, max_km=5.0):
             + manifest["release_url"] + "\nDatabase licensed ODbL 1.0: https://opendatacommons.org/licenses/odbl/1-0/\n"
             "Airport metadata: OurAirports, Public Domain: https://ourairports.com/data/\n"
             "Observed historical connectivity only; incomplete coverage; no live schedules.\n"
-            "See report.json and docs/phase3_import.md for sources, hashes, filtering and limitations.\n", encoding="utf-8")
+            "See report.json and docs/phase3_import.md for sources, hashes, filtering and limitations.\n", encoding="utf-8", newline="\r\n")
         (stage / "LICENSE-ODbL.txt").write_bytes((raw_dir / "LICENSE-ODbL.txt").read_bytes())
         stage.rename(output)
     return report

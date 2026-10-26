@@ -4,6 +4,11 @@ Phase 3 imports real online observations. C++ `Graph.cpp`, BFS, Q1/Q2 algorithms
 GUI and Folium rendering come afterward. `data/sample/` remains the unchanged
 synthetic 12-city/20-edge fixture; it is never replaced with downloaded data.
 
+For the current one-command teammate setup, independent reviewed checksum lock
+and offline CI, follow [TEAM_DATASET_SETUP.md](../TEAM_DATASET_SETUP.md).
+The 36-test measurement below is the original importer baseline; onboarding
+adds 10 regressions for a current total of 46, retaining all original tests.
+
 ## Verified full import result
 
 The 2026-10-26 run processed **all 16,018,874 input rows** and retained

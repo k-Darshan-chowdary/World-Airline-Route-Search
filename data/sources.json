@@ -12,12 +12,12 @@
       "sha256": "2a9dbee691125b0cdb8ceb5fe227c48c903f99c488963b8e53e2ab366521c639"
     },
     "README-MrAirspace.md": {
-      "url": "https://raw.githubusercontent.com/MrAirspace/aircraft-flight-schedules/d4906de/README.md",
+      "url": "https://raw.githubusercontent.com/MrAirspace/aircraft-flight-schedules/d4906dedba893bea4f7ad5966a81409d6a62336c/README.md",
       "bytes": 17594,
       "sha256": "6fb086614cbf82e21125a64f9895390443027c0c3204151e4e52ccdd0ffd5d52"
     },
     "LICENSE-ODbL.txt": {
-      "url": "https://raw.githubusercontent.com/MrAirspace/aircraft-flight-schedules/d4906de/LICENSE-ODbL.txt",
+      "url": "https://raw.githubusercontent.com/MrAirspace/aircraft-flight-schedules/d4906dedba893bea4f7ad5966a81409d6a62336c/LICENSE-ODbL.txt",
       "bytes": 25241,
       "sha256": "d93f996262c15e7cf9d6b54f9f48e3f9d8b9c3a47fa2308dc8ef1f0f5cb88611"
     },
@@ -40,5 +40,8 @@
     "Observed historical flights, not live schedules; incomplete and geographically uneven receiver coverage.",
     "Airline is inferred from callsign, not verified operating carrier.",
     "Airport candidates are inferred; strict filtering further reduces coverage."
-  ]
+  ],
+  "source_commit": "d4906dedba893bea4f7ad5966a81409d6a62336c",
+  "release_id": 411950338,
+  "asset_id": 637792988
 }

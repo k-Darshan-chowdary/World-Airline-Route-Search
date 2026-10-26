@@ -1,0 +1,9 @@
+# Official PyPI SHA-256 wheel hashes; CPython 3.13, no source builds.
+pyarrow==23.0.1 \
+    --hash=sha256:6b8fda694640b00e8af3c824f99f789e836720aa8c9379fb435d4c4953a756b8 \
+    --hash=sha256:8ff51b1addc469b9444b7c6f3548e19dc931b172ab234e995a60aea9f6e6025f \
+    --hash=sha256:71c5be5cbf1e1cb6169d2a0980850bccb558ddc9b747b6206435313c47c37677 \
+    --hash=sha256:9b6f4f17b43bc39d56fec96e53fe89d94bac3eb134137964371b45352d40d0c2 \
+    --hash=sha256:9fc13fc6c403d1337acab46a2c4346ca6c9dec5780c3c697cf8abfd5e19b6b37 \
+    --hash=sha256:5c16ed4f53247fa3ffb12a14d236de4213a4415d127fe9cebed33d51671113e2 \
+    --hash=sha256:cecfb12ef629cf6be0b1887f9f86463b0dd3dc3195ae6224e74006be4736035a
