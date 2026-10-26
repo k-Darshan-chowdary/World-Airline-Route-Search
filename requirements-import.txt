@@ -1,0 +1,2 @@
+# Isolated Python 3.10+ environment; no pandas/full-table read required.
+pyarrow==23.0.1

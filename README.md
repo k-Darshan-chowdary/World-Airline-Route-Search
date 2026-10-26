@@ -1,6 +1,37 @@
 # World-Airline-Route-Search
 C++ and Python airline route search application using graph algorithms and interactive world map visualization.
 
+## Phase 3: real-world dataset importer
+
+The global observed-data importer is implemented on
+`feature/phase3-global-dataset-importer`, stacked onto the Phase 1/2 branch.
+It uses the verified **MrAirspace 2026 Q3 ADS-B observations** with pinned
+OurAirports airport/country metadata. This is incomplete historical observed
+connectivity, not all world routes, current airline service or live schedules.
+Airline codes are inferred from callsigns, not verified operating carriers.
+
+See [download/import instructions, schemas, filtering and licensing](docs/phase3_import.md)
+and the [locked source manifest](data/sources.json). Large raw and generated
+files are ignored. The generated `flight.txt` and `cities.tsv` preserve the
+Phase 2 format and add airport/airline provenance and a reproducibility report.
+Graph loading, `Graph.cpp`, BFS and GUI/map code come after this phase.
+
+Verified full import: **819 cities, 19,283 directed routes, 882 airports,
+85 countries/territories** after conservative filtering of 16,018,874 input
+rows. All **36 tests pass**; the synthetic fixture is unchanged. See the
+[validation snapshot](docs/phase3_validation.json) for exact counts and hashes.
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-import.txt
+.\.venv\Scripts\python.exe scripts/download_phase3.py
+.\.venv\Scripts\python.exe scripts/import_global.py
+.\.venv\Scripts\python.exe scripts/validate_global.py
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
+
+The following Phase 1/2 notes describe the original synthetic fixture and its
+historical branch boundary; the fixture and all its tests remain unchanged.
 
 ## Person 1 progress: Phases 1 and 2
 

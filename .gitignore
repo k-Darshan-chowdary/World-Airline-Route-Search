@@ -92,3 +92,11 @@ htmlcov/
 coverage.xml
 # Jupyter notebook checkpoints
 .ipynb_checkpoints/
+
+# Phase 3 source downloads, disk aggregation, and generated worldwide data
+data/raw/*
+!data/raw/.gitkeep
+data/generated/
+*.sqlite3
+*.sqlite3-journal
+*.part

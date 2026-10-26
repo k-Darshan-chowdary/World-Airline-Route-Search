@@ -1,0 +1,80 @@
+{
+  "source_manifest": "data/sources.json",
+  "verified_on": "2026-10-26",
+  "rows": 16018874,
+  "row_groups": 16,
+  "fields": [
+    {
+      "name": "ICAO_Hex",
+      "arrow_type": "string"
+    },
+    {
+      "name": "Reg",
+      "arrow_type": "string"
+    },
+    {
+      "name": "AC_Type",
+      "arrow_type": "string"
+    },
+    {
+      "name": "AC_Type_Description",
+      "arrow_type": "string"
+    },
+    {
+      "name": "AC_Type_Detailed",
+      "arrow_type": "string"
+    },
+    {
+      "name": "Airline",
+      "arrow_type": "string"
+    },
+    {
+      "name": "Callsign",
+      "arrow_type": "string"
+    },
+    {
+      "name": "Track_Origin_Lat",
+      "arrow_type": "string"
+    },
+    {
+      "name": "Track_Origin_Lon",
+      "arrow_type": "string"
+    },
+    {
+      "name": "Track_Origin_FL_Ft",
+      "arrow_type": "string"
+    },
+    {
+      "name": "Track_Origin_DateTime_UTC",
+      "arrow_type": "string"
+    },
+    {
+      "name": "Track_Origin_ApplicableAirports",
+      "arrow_type": "string"
+    },
+    {
+      "name": "Track_Destination_Lat",
+      "arrow_type": "string"
+    },
+    {
+      "name": "Track_Destination_Lon",
+      "arrow_type": "string"
+    },
+    {
+      "name": "Track_Destination_FL_Ft",
+      "arrow_type": "string"
+    },
+    {
+      "name": "Track_Destination_DateTime_UTC",
+      "arrow_type": "string"
+    },
+    {
+      "name": "Track_Destination_ApplicableAirports",
+      "arrow_type": "string"
+    },
+    {
+      "name": "Route_Validation_Based_on_Callsign",
+      "arrow_type": "string"
+    }
+  ]
+}

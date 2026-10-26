@@ -1,5 +1,10 @@
 # Dataset provenance and future sources
 
+Phase 3 now imports verified real observations from MrAirspace 2026 Q3 and
+OurAirports metadata. See [Phase 3 source verification and reproducible import](phase3_import.md)
+and `data/sources.json`. The notes below retain the original Phase 2 context;
+OpenFlights was not used for the Phase 3 observed dataset.
+
 ## Included Phase 2 sample
 
 `data/sample/flight.txt` is a manually authored, **synthetic illustrative**
