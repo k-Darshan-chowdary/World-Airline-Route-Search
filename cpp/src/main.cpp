@@ -1,54 +1,134 @@
 #include "BFS.h"
 #include "GraphLoader.h"
+#include "RouteSearch.h"
 
-#include <filesystem>
 #include <charconv>
+#include <cstdint>
+#include <filesystem>
 #include <iostream>
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
-int main(int argc, char** argv) {
-    std::filesystem::path directory = "data/generated/2026-q3";
-    std::optional<std::string> from;
-    std::optional<std::string> to;
-    std::optional<std::size_t> expectedCities;
-    std::optional<std::size_t> expectedRoutes;
+#ifdef _WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#endif
+
+namespace {
+std::string jsonString(const std::string& value) {
+    std::string out = "\"";
+    const char* hex = "0123456789abcdef";
+    for (const unsigned char ch : value) {
+        if (ch == '"' || ch == '\\') { out += '\\'; out += static_cast<char>(ch); }
+        else if (ch < 0x20) {
+            out += "\\u00";
+            out += hex[ch >> 4];
+            out += hex[ch & 15];
+        } else out += static_cast<char>(ch);
+    }
+    return out + '"';
+}
+
+template<class Integer>
+Integer nonnegative(const std::string& value, const std::string& option) {
+    Integer parsed = 0;
+    if (value.empty() || value.find_first_not_of("0123456789") != std::string::npos) {
+        throw std::invalid_argument("invalid nonnegative count for " + option);
+    }
+    const auto result = std::from_chars(value.data(), value.data() + value.size(), parsed);
+    if (result.ec != std::errc{} || result.ptr != value.data() + value.size()) {
+        throw std::invalid_argument("invalid nonnegative count for " + option);
+    }
+    return parsed;
+}
+
+const char* statusName(airline::RouteSearchStatus status) {
+    switch (status) {
+        case airline::RouteSearchStatus::Found: return "found";
+        case airline::RouteSearchStatus::Unreachable: return "unreachable";
+        case airline::RouteSearchStatus::ConnectionLimit: return "connection_limit";
+    }
+    throw std::logic_error("unknown route status");
+}
+
+int run(const std::vector<std::string>& args) {
+    bool json = false;
+    for (const auto& arg : args) if (arg == "--json") json = true;
     try {
-        for (int i = 1; i < argc; ++i) {
-            const std::string argument = argv[i];
+        std::filesystem::path directory = "data/generated/2026-q3";
+        std::optional<std::string> from, to;
+        std::optional<std::size_t> expectedCities, expectedRoutes;
+        std::optional<std::int64_t> limit;
+        for (std::size_t i = 0; i < args.size(); ++i) {
+            const auto& argument = args[i];
             if (argument == "--help") {
                 std::cout << "Usage: airline_graph [--data-dir DIR] [--expect-cities N] "
-                             "[--expect-routes N] [--from 'City, Country' --to 'City, Country']\n";
+                             "[--expect-routes N] [--from 'City, Country' --to 'City, Country' "
+                             "[--max-connections X [--json]]]\n"
+                             "Q1 requires connections < X; direct flight = 0 connections.\n"
+                             "X must be decimal digits in [0, 9223372036854775807].\n";
                 return 0;
             }
-            if (i + 1 >= argc) throw std::invalid_argument("missing value for " + argument);
-            const std::string value = argv[++i];
-            if (argument == "--data-dir") directory = value;
+            if (argument == "--json") continue;
+            if (i + 1 >= args.size()) throw std::invalid_argument("missing value for " + argument);
+            const auto& value = args[++i];
+            if (argument == "--data-dir") directory = std::filesystem::u8path(value);
             else if (argument == "--from") from = value;
             else if (argument == "--to") to = value;
-            else if (argument == "--expect-cities" || argument == "--expect-routes") {
-                std::size_t parsed = 0;
-                const auto result = std::from_chars(value.data(), value.data() + value.size(), parsed);
-                if (result.ec != std::errc{} || result.ptr != value.data() + value.size()) {
-                    throw std::invalid_argument("invalid nonnegative count for " + argument);
-                }
-                if (argument == "--expect-cities") expectedCities = parsed;
-                else expectedRoutes = parsed;
-            } else throw std::invalid_argument("unknown argument " + argument);
+            else if (argument == "--expect-cities") expectedCities = nonnegative<std::size_t>(value, argument);
+            else if (argument == "--expect-routes") expectedRoutes = nonnegative<std::size_t>(value, argument);
+            else if (argument == "--max-connections") limit = nonnegative<std::int64_t>(value, argument);
+            else throw std::invalid_argument("unknown argument " + argument);
         }
         if (from.has_value() != to.has_value()) {
             throw std::invalid_argument("--from and --to must be supplied together");
         }
+        if (limit && !from) throw std::invalid_argument("--max-connections requires --from and --to");
+        if (json && !limit) throw std::invalid_argument("--json requires a Q1 query with --max-connections");
         const auto graph = airline::loadGraph(directory);
         if ((expectedCities && graph.cityCount() != *expectedCities) ||
             (expectedRoutes && graph.routeCount() != *expectedRoutes)) {
             throw std::runtime_error("loaded dataset size differs from expected counts");
         }
-        std::cout << "PASS: " << graph.cityCount() << " cities; "
-                  << graph.routeCount() << " directed routes\n";
-        std::cout << "Historical observed connectivity; not current/bookable flights.\n";
-        if (from) {
+        if (!json) {
+            std::cout << "PASS: " << graph.cityCount() << " cities; "
+                      << graph.routeCount() << " directed routes\n";
+            std::cout << "Historical observed connectivity; not current/bookable flights.\n";
+        }
+        if (limit) {
+            const auto result = airline::searchRoute(graph, *from, *to, *limit);
+            if (json) {
+                std::cout << "{\"schema_version\":1,\"query\":\"q1\",\"status\":" << jsonString(statusName(result.status))
+                          << ",\"from\":" << jsonString(*from) << ",\"to\":" << jsonString(*to)
+                          << ",\"exclusive_connection_limit\":" << *limit
+                          << ",\"flights\":" << (result.flights ? std::to_string(*result.flights) : "null")
+                          << ",\"connections\":" << (result.connections ? std::to_string(*result.connections) : "null")
+                          << ",\"historical_observed_connectivity\":true,\"route\":[";
+                for (std::size_t i = 0; i < result.path.size(); ++i) {
+                    if (i) std::cout << ',';
+                    const auto id = result.path[i];
+                    std::cout << "{\"id\":" << id << ",\"city\":" << jsonString(graph.cityName(id)) << '}';
+                }
+                std::cout << "]}\n";
+            } else if (result.status == airline::RouteSearchStatus::Found) {
+                std::cout << "Shortest qualifying route (" << *result.flights << " flights; "
+                          << *result.connections << " connections; connections < " << *limit << "): ";
+                for (std::size_t i = 0; i < result.path.size(); ++i) {
+                    if (i) std::cout << " -> ";
+                    std::cout << graph.cityName(result.path[i]);
+                }
+                std::cout << '\n';
+            } else if (result.status == airline::RouteSearchStatus::Unreachable) {
+                std::cout << "No qualifying route: no directed route exists between those cities.\n";
+            } else {
+                std::cout << "No qualifying route: shortest route has " << *result.connections
+                          << " connections; requires connections < " << *limit << ".\n";
+            }
+        } else if (from) {
             const auto source = graph.cityId(*from);
             const auto destination = graph.cityId(*to);
             if (!source || !destination) throw std::invalid_argument("city not found in dataset");
@@ -67,7 +147,33 @@ int main(int argc, char** argv) {
         }
         return 0;
     } catch (const std::exception& ex) {
+        if (json) std::cout << "{\"schema_version\":1,\"status\":\"error\",\"message\":" << jsonString(ex.what()) << "}\n";
         std::cerr << "ERROR: " << ex.what() << '\n';
         return 1;
     }
 }
+}  // namespace
+
+#ifdef _WIN32
+// Native Windows arguments are UTF-16. Convert explicitly so exact UTF-8 city
+// lookup works independently of the user's legacy console/ANSI code page.
+int wmain(int argc, wchar_t** argv) {
+    SetConsoleOutputCP(CP_UTF8);
+    std::vector<std::string> args;
+    for (int i = 1; i < argc; ++i) {
+        const int bytes = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, argv[i], -1,
+                                             nullptr, 0, nullptr, nullptr);
+        if (!bytes) { std::cerr << "ERROR: invalid Unicode argument\n"; return 1; }
+        std::string value(static_cast<std::size_t>(bytes), '\0');
+        WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, argv[i], -1,
+                            value.data(), bytes, nullptr, nullptr);
+        value.pop_back();
+        args.push_back(value);
+    }
+    return run(args);
+}
+#else
+int main(int argc, char** argv) {
+    return run(std::vector<std::string>(argv + 1, argv + argc));
+}
+#endif

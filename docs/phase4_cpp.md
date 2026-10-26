@@ -1,8 +1,8 @@
 # Phase 4 C++ graph
 
-Continue branch `feature/phase4-cpp-directed-graph`; draft PR targets `main`.
+Phase 4 is merged into `main` through PR #5 (`4cbf979`).
 This phase covers graph storage, loading, generic BFS, CLI, CMake and tests.
-Questions 1 and 2 and the GUI/map remain future work.
+Question 1 is added in [Phase 5](phase5_q1.md); Question 2 and GUI/map remain future work.
 
 ## Build in the VS Code terminal
 
@@ -60,8 +60,9 @@ Relative global paths resolve against the repository root. CTest first verifies
 all five tables, attribution and license against the committed Phase 3 lock,
 including provenance and count accounting. The global graph and CLI tests
 depend on that verification; a missing or altered dataset fails the run.
-There are six CTest targets when global verification is enabled and three
-otherwise. The global graph test checks paths and shortest-distance
+Phase 4 introduced six CTest targets with global verification and three
+otherwise. Phase 5 expands these totals to ten and five respectively. The global
+graph test checks paths and shortest-distance
 certificates from all 819 sources, including unreachable vertices. Tests use
 explicit checks that remain active in Release mode.
 

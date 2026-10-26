@@ -9,6 +9,7 @@ add_library(airline_graph
     cpp/src/Graph.cpp
     cpp/src/GraphLoader.cpp
     cpp/src/BFS.cpp
+    cpp/src/RouteSearch.cpp
 )
 target_include_directories(airline_graph PUBLIC cpp/include)
 target_compile_features(airline_graph PUBLIC cxx_std_17)
@@ -25,6 +26,9 @@ airline_warnings(airline_graph)
 add_executable(airline_graph_cli cpp/src/main.cpp)
 target_link_libraries(airline_graph_cli PRIVATE airline_graph)
 airline_warnings(airline_graph_cli)
+if(MINGW)
+    target_link_options(airline_graph_cli PRIVATE -municode)
+endif()
 # The static library's compiler PDB and CLI's linker PDB otherwise share
 # airline_graph.pdb on MSVC Debug builds, causing LNK1201 during parallel builds.
 set_target_properties(airline_graph_cli PROPERTIES
@@ -45,6 +49,15 @@ if(BUILD_TESTING)
         "${CMAKE_CURRENT_SOURCE_DIR}/cpp/tests/test_cli.py"
         "$<TARGET_FILE:airline_graph_cli>" "${CMAKE_CURRENT_SOURCE_DIR}/data/sample")
 
+    add_executable(airline_q1_tests cpp/tests/test_route_search.cpp)
+    target_link_libraries(airline_q1_tests PRIVATE airline_graph)
+    airline_warnings(airline_q1_tests)
+    target_compile_definitions(airline_q1_tests PRIVATE AIRLINE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+    add_test(NAME cpp_q1_tests COMMAND airline_q1_tests)
+    add_test(NAME cpp_q1_cli COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cpp/tests/test_q1_cli.py"
+        "$<TARGET_FILE:airline_graph_cli>" "${CMAKE_CURRENT_SOURCE_DIR}/data/sample")
+
     # Explicit opt-in: normal offline CI needs no worldwide download. A supplied
     # directory is mandatory and must match the existing Phase 3 checksum lock.
     set(AIRLINE_GLOBAL_DATA_DIR "" CACHE PATH "Official generated Phase 3 dataset to verify")
@@ -58,7 +71,12 @@ if(BUILD_TESTING)
         add_test(NAME cpp_global_graph COMMAND airline_graph_tests "${AIRLINE_GLOBAL_DATA_DIR}")
         add_test(NAME cpp_global_graph_cli COMMAND airline_graph_cli
             --data-dir "${AIRLINE_GLOBAL_DATA_DIR}" --expect-cities 819 --expect-routes 19283)
-        set_tests_properties(cpp_global_graph cpp_global_graph_cli PROPERTIES FIXTURES_REQUIRED official_global)
+        add_test(NAME cpp_global_q1 COMMAND airline_q1_tests "${AIRLINE_GLOBAL_DATA_DIR}")
+        add_test(NAME cpp_global_q1_cli COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cpp/tests/test_q1_cli.py"
+            "$<TARGET_FILE:airline_graph_cli>" "${CMAKE_CURRENT_SOURCE_DIR}/data/sample" "${AIRLINE_GLOBAL_DATA_DIR}")
+        set_tests_properties(cpp_global_graph cpp_global_graph_cli cpp_global_q1 cpp_global_q1_cli
+            PROPERTIES FIXTURES_REQUIRED official_global)
     endif()
     get_property(airline_tests DIRECTORY PROPERTY TESTS)
     set_tests_properties(${airline_tests} PROPERTIES TIMEOUT 180)
