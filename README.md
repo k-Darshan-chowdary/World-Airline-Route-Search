@@ -1,183 +1,217 @@
-# World-Airline-Route-Search
-C++ and Python airline route search application using graph algorithms and interactive world map visualization.
+# World Airline Route Search
 
-## Phase 7: Person 1 backend integration and team handoff
+A three-person university DSA project that uses a directed graph to search for
+routes between cities. The C++17 backend loads city and route data, finds routes
+with BFS, and returns readable output or JSON for the planned Python GUI.
 
-Phases 1–6 are merged into `main`, through Phase 6 merge `aaa014a` (PR #7).
-Phase 7 is on `feature/phase7-backend-handoff` for separate draft-PR review;
-it preserves Q1/Q2 behavior and JSON schema version 1. Person 1's backend
-handoff includes:
+The backend and dataset setup are complete through Phase 7. Q3/Q4 and the GUI
+are still pending. This project studies **historical observed connectivity**;
+it does not provide current schedules, fares, available seats or bookings.
 
-- [Maintained C++ API and subprocess JSON contract](docs/backend_api_contract.md),
-  with field types, statuses, exact CLI examples, map metadata joins and errors.
-- [Windows VS Code setup and teammate responsibilities](docs/team_backend_handoff.md).
-- A stdlib-only [Python subprocess adapter](examples/backend_client.py) and
-  separate CTest contract/integration tests; CI remains offline with six jobs.
-- [Phase 7 executed validation and compatibility notes](docs/phase7_validation.md).
+## Project status
 
-Q3/Q4 are Person 2's work; PySide6/Folium/Qt WebEngine are Person 3's work.
-Those features remain unimplemented here. Sample routes are synthetic; official
-routes are incomplete historical observed connectivity, not bookable service.
-The earlier phase sections below retain implementation/setup history.
+| Part | Owner | Status |
+| --- | --- | --- |
+| Dataset importer, graph, BFS and CLI | Person 1 | Complete |
+| Q1: shortest route with fewer than `x` connections | Person 1 | Complete |
+| Q2: shortest walk through two required cities, in either order | Person 1 | Complete |
+| JSON v1 contract and Python adapter | Person 1 | Complete |
+| Q3: closed walk visiting reachable cities | Person 2 | Pending |
+| Q4: meeting-city search | Person 2 | Pending |
+| PySide6 GUI and Folium / Qt WebEngine maps | Person 3 | Pending |
 
-## Phase 6: Question 2 through two required cities
+See the [team roles](Airline_Team_Roles.docx) and
+[backend handoff](docs/team_backend_handoff.md) for responsibilities and integration.
 
-Person 1's Q2 is implemented in the reusable C++17 `RequiredStops` API and
-CLI `--via-b B --via-c C`, with optional `--json`. Three directed BFS traversals
-compare A → B → C → D and A → C → B → D and return the walk with the fewest
-flights. Repeated visits and aliased endpoints are supported; waypoint order
-reports actual first encounters. Connections are `max(flights - 1, 0)`.
+## Algorithms and tools
 
-See [Phase 6 semantics, correctness, commands and executed validation](docs/phase6_q2.md).
-Phase 6 was merged through [PR #7](https://github.com/k-Darshan-chowdary/World-Airline-Route-Search/pull/7)
-at `aaa014a`. GUI, maps and teammates' Q3/Q4 remain future work.
+- **C++17:** directed adjacency lists, hash lookup for exact city labels, and
+  BFS with a queue, distance array and parent array.
+- **Q1:** one BFS finds the fewest flight legs, then checks the strict connection
+  limit. Connections are `max(flights - 1, 0)`, so a direct flight has zero.
+- **Q2:** three BFS traversals compare A → B → C → D and A → C → B → D.
+  The result is a shortest directed walk; repeated cities are allowed.
+- **Python:** dataset setup, streaming Parquet import with PyArrow, validation
+  and a standard-library subprocess adapter.
+- **CMake / CTest and GitHub Actions:** builds and regression tests on Windows
+  and Linux. The C++ code has no external library dependencies.
 
-```powershell
-.\build\airline_graph.exe --data-dir data/sample --from "Dallas, United States" --via-b "London, United Kingdom" --via-c "Tokyo, Japan" --to "Auckland, New Zealand" --json
-```
+Graph storage is **O(V + E)**. Q1 and Q2 each take **O(V + E)** time and
+**O(V)** extra space per query. A → B does not imply B → A.
+Ties follow stable metadata city IDs. Details: [Q1](docs/phase5_q1.md),
+[Q2](docs/phase6_q2.md), [API contract](docs/backend_api_contract.md).
 
-## Phase 5: Question 1 shortest route with a connection limit
+## Data
 
-Phase 5 adds the reusable C++17 `RouteSearch` API and CLI
-`--max-connections X` with optional `--json`. Connections are intermediate
-cities: a direct flight has zero, and the limit is strictly `connections < X`.
-Same-city queries use zero flights/zero connections; invalid inputs are errors,
-while unreachable and over-limit routes are distinct valid no-result statuses.
+| Dataset | Contents | Use |
+| --- | --- | --- |
+| `data/sample/` | 12 cities, 20 directed routes | Synthetic examples and offline tests; included in Git |
+| `data/generated/2026-q3/` | 819 cities, 19,283 unique directed routes, 882 airports, 85 countries/territories | Filtered historical observations; generated locally and ignored by Git |
 
-See [Phase 5 semantics, API, CLI, tests and validation](docs/phase5_q1.md).
-Phase 5 is merged into `main` through PR #6 (`0bf8269`). Question 2 is added
-in Phase 6 above; GUI/map work remains future work.
+The real dataset uses pinned **MrAirspace 2026 Q3 ADS-B observations** and
+**OurAirports** metadata. Versions, source URLs and checksums are recorded in
+[sources.json](data/sources.json) and the independent
+[dataset lock](data/dataset_2026_q3.lock.json). Setup verifies source bytes,
+generated tables, attribution and license notices against that lock.
 
-## Phase 4: C++17 directed graph and BFS
+Coverage is incomplete and geographically uneven. Airline codes are inferred
+from callsigns, and retained record counts are not flight frequencies. Map
+coordinates represent one retained airport per city; sample coordinates are
+approximate city centers. Missing routes do not prove that no service exists.
+Read the [source and filtering notes](docs/phase3_import.md) before using the data.
 
-The existing Phase 4 implementation is completed on
-`feature/phase4-cpp-directed-graph`: checked city IDs, coordinates, directed
-adjacency lists, strict UTF-8 dataset loading, and unweighted BFS with parent
-paths and unreachable results. Reverse routes exist only when present in the
-input. Phase 4 did not implement Questions 1/2 or GUI/map features;
-Q1 is added in Phase 5 above.
+## Quick start
 
-See [build, CLI and test instructions](docs/phase4_cpp.md) and
-[actual compilation/test evidence](docs/phase4_validation.md).
-Debug and Release builds pass the 12-city/20-route sample and the checksum-locked
-819-city/19,283-route dataset, including BFS from every city. CI tests C++17 on
-Linux and Windows in both configurations alongside all preserved Python tests.
-The following Phase 3 and Phase 1/2 sections retain the earlier setup history.
+Run all commands from the repository root. To try the sample, you need Git,
+CMake 3.16+, a C++17 compiler and Python 3.10+ for CTest. The reproducible
+real-data setup requires **64-bit CPython 3.13** and internet access.
+CI uses Python 3.13.1.
 
-## Phase 3: real-world dataset importer
+### Windows: VS Code and MSVC
 
-**All three teammates:** start with [TEAM_DATASET_SETUP.md](TEAM_DATASET_SETUP.md).
-Download the step-by-step [teammate Word guide](docs/Teammate_Dataset_Setup_Guide.docx)
-for setup, verification, troubleshooting and the completion checklist.
-In Windows VS Code PowerShell, run `py -3.13 scripts/setup_dataset.py` for the
-environment, all tests, pinned downloads/import and independent checksum checks.
-The onboarding branch is `feature/phase3-team-dataset-setup`, stacked on the
-importer PR. CI runs all 36 original tests plus 10 setup regressions without
-downloading worldwide raw data.
-
-The global observed-data importer is implemented on
-`feature/phase3-global-dataset-importer`, stacked onto the Phase 1/2 branch.
-It uses the verified **MrAirspace 2026 Q3 ADS-B observations** with pinned
-OurAirports airport/country metadata. This is incomplete historical observed
-connectivity, not all world routes, current airline service or live schedules.
-Airline codes are inferred from callsigns, not verified operating carriers.
-
-See [download/import instructions, schemas, filtering and licensing](docs/phase3_import.md)
-and the [locked source manifest](data/sources.json). Large raw and generated
-files are ignored. The generated `flight.txt` and `cities.tsv` preserve the
-Phase 2 format and add airport/airline provenance and a reproducibility report.
-Graph loading, `Graph.cpp` and BFS are now completed in Phase 4 above;
-GUI/map code remains future work.
-
-Verified full import: **819 cities, 19,283 directed routes, 882 airports,
-85 countries/territories** after conservative filtering of 16,018,874 input
-rows. All **36 tests pass**; the synthetic fixture is unchanged. See the
-[validation snapshot](docs/phase3_validation.json) for exact counts and hashes.
+Install Visual Studio 2022 Build Tools with **Desktop development with C++**
+and the Windows SDK. Open an x64 Developer PowerShell terminal in VS Code.
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements-import.txt
-.\.venv\Scripts\python.exe scripts/download_phase3.py
-.\.venv\Scripts\python.exe scripts/import_global.py
-.\.venv\Scripts\python.exe scripts/validate_global.py
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+git clone https://github.com/k-Darshan-chowdary/World-Airline-Route-Search.git
+cd World-Airline-Route-Search
+
+# Optional for the sample; required for the real dataset.
+py -3.13 scripts/setup_dataset.py
+
+$backendPython = (py -3.13 -c "import sys; print(sys.executable)").Trim()
+cmake -S . -B build -G "Visual Studio 17 2022" -A x64 "-DPython3_EXECUTABLE:FILEPATH=$backendPython"
+cmake --build build --config Debug --parallel 2
+ctest --test-dir build -C Debug --output-on-failure --no-tests=error
+cmake --build build --config Release --parallel 2
+ctest --test-dir build -C Release --output-on-failure --no-tests=error
 ```
 
-The following Phase 1/2 notes describe the original synthetic fixture and its
-historical branch boundary; the fixture and all its tests remain unchanged.
+Dataset setup creates `.venv`, installs hash-locked dependencies, runs the offline
+Python tests, downloads the pinned inputs and verifies the import. Allow at
+least **3 GB** of disk space; the flight source alone is about 1 GB. It finishes
+with `READY: 819 cities; 19,283 directed routes; 85 countries/territories`.
+For an existing verified environment and raw inputs, rerun with `--offline`.
+See [dataset setup](TEAM_DATASET_SETUP.md) for recovery and verification commands.
 
-## Person 1 progress: Phases 1 and 2
+### Linux: GCC
 
-Repository setup and the sample-data foundation are prepared. The existing
-[team responsibilities](Airline_Team_Roles.docx) document is preserved.
-See [setup and tool versions](docs/phase1_setup.md) and
-[data provenance](docs/data_sources.md).
+This builds and tests the sample without downloading the real dataset:
 
-**The included routes are synthetic illustrative examples, not verified or
-current airline service. No OpenFlights dataset has been downloaded.**
-The future OpenFlights route source is 2014-era historical data.
+```sh
+cmake -S . -B build-debug -DCMAKE_BUILD_TYPE=Debug
+cmake --build build-debug --parallel 2
+ctest --test-dir build-debug --output-on-failure --no-tests=error
+cmake -S . -B build-release -DCMAKE_BUILD_TYPE=Release
+cmake --build build-release --parallel 2
+ctest --test-dir build-release --output-on-failure --no-tests=error
+```
 
-### Folder layout
+For the real dataset on Linux, run `python3.13 scripts/setup_dataset.py`.
+Windows MSYS2/GCC instructions are in the [backend handoff](docs/team_backend_handoff.md#gcc-alternatives).
+Use a fresh build directory when changing compiler or CMake generator.
+
+## Try Q1 and Q2
+
+These examples use the included synthetic sample and the MSVC Debug executable:
+
+```powershell
+.\build\Debug\airline_graph.exe --data-dir data/sample --expect-cities 12 --expect-routes 20
+
+# Q1: Dallas to New York, with strictly fewer than 1 connection.
+.\build\Debug\airline_graph.exe --data-dir data/sample --from "Dallas, United States" --to "New York, United States" --max-connections 1 --json
+
+# Q2: Dallas to Paris through New York and London, in either order.
+.\build\Debug\airline_graph.exe --data-dir data/sample --from "Dallas, United States" --via-b "New York, United States" --via-c "London, United Kingdom" --to "Paris, France" --json
+```
+
+Q1 returns Dallas → New York: **1 flight, 0 connections**. Q2 returns
+Dallas → New York → London → Paris: **3 flights, 2 connections**.
+A Q1 limit of `0` cannot qualify, even for a direct flight. An unreachable route
+is a valid no-result response; malformed input is an error.
+
+City labels must match `cities.tsv` exactly, including case and accents.
+For Linux, use `./build-debug/airline_graph`; MinGW builds use
+`.\build-debug\airline_graph.exe`. Remove `--json` for readable output.
+After dataset setup, use `--data-dir data/generated/2026-q3` for the real data.
+That is also the default directory when `--data-dir` is omitted.
+
+### Call the backend from Python
+
+From the repository root:
+
+```python
+from examples.backend_client import query_backend
+
+result = query_backend(
+    "build/Debug/airline_graph.exe",
+    "data/sample",
+    from_city="Dallas, United States",
+    to_city="New York, United States",
+    exclusive_connection_limit=1,
+)
+print(result["status"], result["flights"], result["connections"])
+# found 1 0
+```
+
+The [adapter](examples/backend_client.py) validates JSON schema version 1 and
+the echoed query. The [contract](docs/backend_api_contract.md) covers Q2 calls,
+statuses, errors, Unicode and metadata joins. GUI integration should run this
+blocking call in a worker.
+
+## Tests
+
+After dataset setup, run the separate Python suite:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/run_tests.py
+.\.venv\Scripts\python.exe scripts/check_phase2.py --expect-cities 12 --expect-edges 20
+```
+
+There are **46 offline Python tests**, with network calls blocked and skipped
+tests treated as failures. CTest runs **8 offline targets** covering graph
+loading, BFS, Q1/Q2, CLI behavior and the Python/JSON contract. Independent
+oracles check shortest-route results, including required-city aliases and revisits.
+
+With the verified real dataset available, opt into all **16 CTest targets**:
+
+```powershell
+cmake -S . -B build -DAIRLINE_GLOBAL_DATA_DIR:PATH=data/generated/2026-q3
+ctest --test-dir build -C Debug --output-on-failure --no-tests=error
+ctest --test-dir build -C Release --output-on-failure --no-tests=error
+```
+
+The [six-job CI workflow](.github/workflows/dataset-tests.yml) runs Python tests
+on Ubuntu and Windows, plus C++ tests on Linux/GCC and Windows/MSVC in Debug
+and Release. CI uses small fixtures and does not download or verify the full
+real dataset. [Phase 7 validation](docs/phase7_validation.md) records the earlier
+full local run; each PR's checks show its own CI results.
+
+## Repository layout
 
 ```text
-cpp/include/          future C++ headers (placeholder only)
-cpp/src/              future C++ source (placeholder only)
-data/sample/          synthetic flight.txt and matching cities.tsv
-data/raw/             reserved for later source data (placeholder only)
-scripts/              standard-library Python data checker
-tests/                data validation tests
-docs/                 setup and data-source notes
-python/gui/           future desktop interface (placeholder only)
-python/maps/          future map display (placeholder only)
+cpp/include/      Graph, BFS, Q1 and Q2 public headers
+cpp/src/          Backend implementation and CLI
+cpp/tests/        C++ tests and Python subprocess regressions
+data/sample/      Committed synthetic fixture
+data/             Source manifest, schema and checksum lock
+scripts/          Dataset setup, import and validation
+tests/            Offline dataset tests
+examples/         Python backend adapter
+python/gui/       Reserved for Person 3
+python/maps/      Reserved for Person 3
+docs/             API, handoff, source notes and phase records
 ```
 
-### Dataset format
+Start with the [documentation index](docs/README.md),
+[dataset setup](TEAM_DATASET_SETUP.md) or [backend contract](docs/backend_api_contract.md).
+Raw downloads, generated data, environments and build outputs stay out of Git.
 
-Files use UTF-8. Labels use the exact form `City, Country` and are
-case-sensitive. A tab separates fields; commas inside labels are not delimiters.
+## Attribution and licensing
 
-`data/sample/flight.txt`: no header; one directed edge per line with exactly two
-tab-separated fields, `source<TAB>destination`. `<TAB>` means one actual tab.
-Blank lines and lines beginning with `#` (optionally after spaces) are ignored.
-`Dallas, United States<TAB>New York, United States` represents only Dallas to
-New York. The reverse direction must be a separate row. Duplicate directed
-edges and self-loops are rejected. There are no weights, fares or schedules.
-
-`data/sample/cities.tsv`: a tab-separated header
-`city<TAB>latitude<TAB>longitude`, followed by one row per city. Coordinates are
-finite decimal degrees: latitude in [-90, 90], longitude in [-180, 180]. They
-represent approximate city centers, not airports. Every route endpoint must
-have exactly one coordinate record, and every sample city must occur in an edge.
-The included fixture contains **12 unique cities, 20 directed edges, and 12
-coordinate records**. See the source notes for the sample's limitations.
-
-### How to run the Phase 2 checks
-
-Open this folder in VS Code, then open its terminal. Python 3.9+ is sufficient;
-the checks need no packages or installation. From the repository root:
-
-```powershell
-python scripts/check_phase2.py --expect-cities 12 --expect-edges 20
-python -m unittest discover -s tests -v
-```
-
-Expected checker result:
-
-```text
-PASS: 12 cities; 20 directed edges; 12 matching coordinate records
-Integrity checks passed. Sample routes are synthetic; no real-world service is asserted.
-```
-
-The checker exits with code 1 and a `FAIL:` diagnostic when integrity or expected
-counts do not match. It locates the bundled sample relative to its own file;
-`--data-dir PATH` can select another directory containing the same two formats.
-Tests cover the fixture counts, directed one-way edges, invalid coordinates,
-missing or duplicate metadata, malformed rows, duplicate edges, self-loops,
-empty data, unused cities, and a failing command-line count check.
-
-### Branch and phase boundary
-
-Work is on `feature/person1-graph-q1-q2`, based on `main`. Submit changes through
-a draft pull request to `main` for review. Phases 1 and 2 do not implement a
-graph loader, `Graph.cpp`, BFS, Q1/Q2 routing, GUI, maps or source-data downloads.
-There is no runnable route-search application yet.
+Flight-derived data comes from MrAirspace / Sebastiaan Menger and ADSB.lol
+observations under **ODbL 1.0**. OurAirports metadata is **Public Domain**.
+Keep generated attribution, license and provenance files with any shared data,
+and follow the [redistribution notes](docs/phase3_import.md)
+and [ODbL text](docs/licenses/ODbL-1.0.txt).
+These data terms do not establish a license for the project's source code.

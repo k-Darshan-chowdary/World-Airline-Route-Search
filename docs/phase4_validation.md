@@ -1,5 +1,8 @@
 # Phase 4 compilation and test evidence
 
+Historical Phase 4 validation record. For current setup and test totals, see
+the [backend handoff](team_backend_handoff.md).
+
 Verified on 2026-10-26 in Windows PowerShell from the existing Phase 4 branch,
 continuing commit `7457404`. The checkout is open in VS Code.
 

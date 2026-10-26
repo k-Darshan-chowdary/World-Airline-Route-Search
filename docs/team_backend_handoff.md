@@ -1,8 +1,7 @@
 # Person 1 final backend handoff (Phase 7)
 
-Phases 1–6 are merged; Phase 6 merge is `aaa014a5abce132e8ba6414566cf54e983f512bc`.
-Phase 7 is reviewed separately on `feature/phase7-backend-handoff`, targeting
-`main`; do not merge it without the user's separate approval. The supported
+Phases 1–7 are merged into `main` through [PR #8](https://github.com/k-Darshan-chowdary/World-Airline-Route-Search/pull/8)
+at `fded9a98f16b1f1d4314ef10bf5f8bb5d7cf6836`. The supported
 backend is C++17 graph/loader/BFS plus Q1/Q2, with JSON schema version 1.
 Start integration with [the maintained API contract](backend_api_contract.md)
 and [executed Phase 7 validation](phase7_validation.md).
@@ -18,9 +17,6 @@ below run from the repository root. Existing checkouts must first inspect
 ```powershell
 git clone https://github.com/k-Darshan-chowdary/World-Airline-Route-Search.git
 cd World-Airline-Route-Search
-git fetch origin
-# Until Phase 7 is approved/merged, review this feature branch:
-git switch --track origin/feature/phase7-backend-handoff
 py -3.13 --version
 py -3.13 scripts/setup_dataset.py
 ```
@@ -33,7 +29,8 @@ time. Reuse a verified installation with `py -3.13 scripts/setup_dataset.py
 --offline`. An incomplete environment or changed bytes fails rather than
 silently overwriting work. See preserved [TEAM_DATASET_SETUP.md](../TEAM_DATASET_SETUP.md)
 and [Word dataset guide](Teammate_Dataset_Setup_Guide.docx) for full recovery
-and license details. The Word guide is preserved byte-for-byte in Phase 7.
+and license details. The Word guide records the original Phase 3 setup; use
+current `main` rather than its old review branch. The original file is preserved.
 
 ```powershell
 $backendPython = (Resolve-Path .venv/Scripts/python.exe).Path
@@ -146,4 +143,4 @@ algorithms to hold GUI state.
 - Use the same metadata as the backend; verify each returned ID/label pair and
   latitude/longitude order. Clearly label sample/historical data on maps.
 - Preserve teammate files, commit history, dataset locks, source pins and
-  licenses. Review the Phase 7 draft PR; the user approves any merge separately.
+  licenses. Make integration changes on a new branch from current `main`.

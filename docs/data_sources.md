@@ -1,4 +1,4 @@
-# Dataset provenance and future sources
+# Dataset provenance and original source planning
 
 Phase 3 now imports verified real observations from MrAirspace 2026 Q3 and
 OurAirports metadata. See [Phase 3 source verification and reproducible import](phase3_import.md)
@@ -16,13 +16,11 @@ distance, frequency, or present-day connectivity. Directions are independent.
 coordinates in decimal degrees (latitude, longitude). They are illustrative map
 positions, not airport coordinates, and have not been geospatially verified.
 City labels match the edge endpoints exactly. No third-party dataset was
-downloaded or imported for this phase. `data/raw/` is reserved and empty except
-for its Git placeholder.
+downloaded or imported for Phase 2. Later source downloads go under ignored `data/raw/phase3/`.
 
-## Planned later source: OpenFlights
+## Original source option: OpenFlights (not used)
 
-Official data documentation: <https://openflights.org/data.php>
-(also served at <https://nginx.openflights.org/data>).
+Official data documentation: <https://openflights.org/data.php>.
 OpenFlights states that its route-data provider stopped providing updates in
 June 2014. Treat that route snapshot as **2014-era historical data**, never as
 current airline service. Airport metadata and route records may have different
