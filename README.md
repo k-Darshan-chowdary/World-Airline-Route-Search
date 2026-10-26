@@ -4,6 +4,8 @@ C++ and Python airline route search application using graph algorithms and inter
 ## Phase 3: real-world dataset importer
 
 **All three teammates:** start with [TEAM_DATASET_SETUP.md](TEAM_DATASET_SETUP.md).
+Download the step-by-step [teammate Word guide](docs/Teammate_Dataset_Setup_Guide.docx)
+for setup, verification, troubleshooting and the completion checklist.
 In Windows VS Code PowerShell, run `py -3.13 scripts/setup_dataset.py` for the
 environment, all tests, pinned downloads/import and independent checksum checks.
 The onboarding branch is `feature/phase3-team-dataset-setup`, stacked on the
