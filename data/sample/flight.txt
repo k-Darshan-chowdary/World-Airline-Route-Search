@@ -1,0 +1,23 @@
+# SYNTHETIC ILLUSTRATIVE SAMPLE - not verified airline service.
+# UTF-8; two TAB-separated city labels per directed edge; no header.
+# Reverse directions exist only when explicitly listed.
+Dallas, United States	New York, United States
+New York, United States	Dallas, United States
+New York, United States	London, United Kingdom
+London, United Kingdom	New York, United States
+London, United Kingdom	Paris, France
+Paris, France	London, United Kingdom
+London, United Kingdom	Dubai, United Arab Emirates
+Dubai, United Arab Emirates	Mumbai, India
+Mumbai, India	Dubai, United Arab Emirates
+Mumbai, India	Hyderabad, India
+Hyderabad, India	Delhi, India
+Delhi, India	London, United Kingdom
+Delhi, India	Singapore, Singapore
+Singapore, Singapore	Delhi, India
+Singapore, Singapore	Sydney, Australia
+Sydney, Australia	Auckland, New Zealand
+Auckland, New Zealand	Sydney, Australia
+Singapore, Singapore	Tokyo, Japan
+Tokyo, Japan	Sydney, Australia
+Paris, France	Dubai, United Arab Emirates
