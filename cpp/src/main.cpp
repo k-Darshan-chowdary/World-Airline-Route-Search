@@ -2,9 +2,11 @@
 #include "GraphLoader.h"
 #include "RouteSearch.h"
 #include "RequiredStops.h"
+#include "Utf8.h"
 
 #include <charconv>
 #include <cstdint>
+#include <cwchar>
 #include <filesystem>
 #include <iostream>
 #include <optional>
@@ -23,7 +25,17 @@ namespace {
 std::string jsonString(const std::string& value) {
     std::string out = "\"";
     const char* hex = "0123456789abcdef";
-    for (const unsigned char ch : value) {
+    for (std::size_t i = 0; i < value.size();) {
+        const auto ch = static_cast<unsigned char>(value[i]);
+        if (ch >= 0x80) {
+            const auto bytes = airline::detail::utf8ScalarBytes(value, i);
+            // Exception diagnostics may originate in a platform's legacy encoding.
+            // Keep even those error responses valid UTF-8 JSON.
+            if (!bytes) { out += "\\ufffd"; ++i; }
+            else { out.append(value, i, bytes); i += bytes; }
+            continue;
+        }
+        ++i;
         if (ch == '"' || ch == '\\') { out += '\\'; out += static_cast<char>(ch); }
         else if (ch < 0x20) {
             out += "\\u00";
@@ -32,6 +44,12 @@ std::string jsonString(const std::string& value) {
         } else out += static_cast<char>(ch);
     }
     return out + '"';
+}
+
+int reportError(bool json, const std::string& message) {
+    if (json) std::cout << "{\"schema_version\":1,\"status\":\"error\",\"message\":" << jsonString(message) << "}\n";
+    std::cerr << "ERROR: " << message << '\n';
+    return 1;
 }
 
 template<class Integer>
@@ -70,6 +88,9 @@ int run(const std::vector<std::string>& args) {
     bool json = false;
     for (const auto& arg : args) if (arg == "--json") json = true;
     try {
+        for (const auto& arg : args) {
+            if (!airline::detail::validUtf8(arg)) throw std::invalid_argument("invalid UTF-8 argument");
+        }
         std::filesystem::path directory = "data/generated/2026-q3";
         std::optional<std::string> from, to, viaB, viaC;
         std::optional<std::size_t> expectedCities, expectedRoutes;
@@ -77,12 +98,14 @@ int run(const std::vector<std::string>& args) {
         for (std::size_t i = 0; i < args.size(); ++i) {
             const auto& argument = args[i];
             if (argument == "--help") {
-                std::cout << "Usage: airline_graph [--data-dir DIR] [--expect-cities N] "
+                const std::string usage = "Usage: airline_graph [--data-dir DIR] [--expect-cities N] "
                              "[--expect-routes N] [--from 'City, Country' --to 'City, Country' "
                              "[--max-connections X | --via-b 'City, Country' --via-c 'City, Country'] [--json]]\n"
                              "Q1 requires connections < X; direct flight = 0 connections.\n"
                              "X must be decimal digits in [0, 9223372036854775807].\n"
                              "Q2 visits both required cities in either order, minimizing flights; repeated visits are allowed.\n";
+                if (json) std::cout << "{\"schema_version\":1,\"status\":\"help\",\"usage\":" << jsonString(usage) << "}\n";
+                else std::cout << usage;
                 return 0;
             }
             if (argument == "--json") continue;
@@ -187,9 +210,7 @@ int run(const std::vector<std::string>& args) {
         }
         return 0;
     } catch (const std::exception& ex) {
-        if (json) std::cout << "{\"schema_version\":1,\"status\":\"error\",\"message\":" << jsonString(ex.what()) << "}\n";
-        std::cerr << "ERROR: " << ex.what() << '\n';
-        return 1;
+        return reportError(json, ex.what());
     }
 }
 }  // namespace
@@ -199,11 +220,13 @@ int run(const std::vector<std::string>& args) {
 // lookup works independently of the user's legacy console/ANSI code page.
 int wmain(int argc, wchar_t** argv) {
     SetConsoleOutputCP(CP_UTF8);
+    bool json = false;
+    for (int i = 1; i < argc; ++i) if (std::wcscmp(argv[i], L"--json") == 0) json = true;
     std::vector<std::string> args;
     for (int i = 1; i < argc; ++i) {
         const int bytes = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, argv[i], -1,
                                              nullptr, 0, nullptr, nullptr);
-        if (!bytes) { std::cerr << "ERROR: invalid Unicode argument\n"; return 1; }
+        if (!bytes) return reportError(json, "invalid Unicode argument");
         std::string value(static_cast<std::size_t>(bytes), '\0');
         WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, argv[i], -1,
                             value.data(), bytes, nullptr, nullptr);

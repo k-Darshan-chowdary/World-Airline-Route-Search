@@ -1,5 +1,10 @@
 # Same Phase 3 dataset for all three teammates
 
+Current integration: Phases 1–6 are merged. For C++ builds, Q1/Q2 JSON and
+Person 2/3 integration, use [the Phase 7 backend handoff](docs/team_backend_handoff.md)
+and [versioned API contract](docs/backend_api_contract.md). This dataset setup
+and the existing Word guide remain available unchanged in purpose.
+
 A printable [teammate Word guide](docs/Teammate_Dataset_Setup_Guide.docx) covers
 the steps below plus troubleshooting and a completion report for each teammate.
 This Markdown file remains the source of truth for setup.
@@ -146,10 +151,10 @@ Dependency installation needs internet; regular CI does **not** download or
 claim to revalidate the 1 GB worldwide source. Full input/output verification
 is the teammate setup's job and was also performed locally.
 
-Branch stack: PR #1's `feature/person1-graph-q1-q2` -> PR #2's
+Historical Phase 3 branch stack (now merged): PR #1's `feature/person1-graph-q1-q2` -> PR #2's
 `feature/phase3-global-dataset-importer` -> `feature/phase3-team-dataset-setup`.
-This branch's draft PR targets the Phase 3 importer branch. Keep PR #1 and #2
-unchanged, do not merge, and coordinate dependent PR bases after review.
+The original onboarding PR targeted the Phase 3 importer branch. New integration
+work starts from current `main`; the Phase 7 draft PR targets `main` separately.
 
 ## Data interpretation and redistribution
 
