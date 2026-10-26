@@ -14,7 +14,7 @@ namespace {
 
 std::runtime_error error(const std::filesystem::path& file, std::size_t line,
                          const std::string& detail) {
-    return std::runtime_error(file.string() + ":" + std::to_string(line) + ": " + detail);
+    return std::runtime_error(file.u8string() + ":" + std::to_string(line) + ": " + detail);
 }
 
 bool validUtf8(const std::string& text) {
@@ -91,7 +91,7 @@ double parseCoordinate(const std::string& text, bool latitude,
 
 std::ifstream inputFile(const std::filesystem::path& path) {
     std::ifstream input(path, std::ios::binary);
-    if (!input) throw std::runtime_error("cannot open " + path.string());
+    if (!input) throw std::runtime_error("cannot open " + path.u8string());
     return input;
 }
 
@@ -125,7 +125,7 @@ Graph loadGraph(const std::filesystem::path& directory) {
             throw error(citiesPath, lineNumber, ex.what());
         }
     }
-    if (!cities.eof()) throw std::runtime_error("read failure: " + citiesPath.string());
+    if (!cities.eof()) throw std::runtime_error("read failure: " + citiesPath.u8string());
     if (!graph.cityCount()) throw error(citiesPath, lineNumber, "no cities");
 
     auto routes = inputFile(routesPath);
@@ -155,7 +155,7 @@ Graph loadGraph(const std::filesystem::path& directory) {
         used[*source] = true;
         used[*destination] = true;
     }
-    if (!routes.eof()) throw std::runtime_error("read failure: " + routesPath.string());
+    if (!routes.eof()) throw std::runtime_error("read failure: " + routesPath.u8string());
     if (!graph.routeCount()) throw error(routesPath, lineNumber, "no routes");
     for (std::size_t id = 0; id < used.size(); ++id) {
         if (!used[id]) {

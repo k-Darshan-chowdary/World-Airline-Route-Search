@@ -1,6 +1,25 @@
 # World-Airline-Route-Search
 C++ and Python airline route search application using graph algorithms and interactive world map visualization.
 
+## Phase 7: Person 1 backend integration and team handoff
+
+Phases 1–6 are merged into `main`, through Phase 6 merge `aaa014a` (PR #7).
+Phase 7 is on `feature/phase7-backend-handoff` for separate draft-PR review;
+it preserves Q1/Q2 behavior and JSON schema version 1. Person 1's backend
+handoff includes:
+
+- [Maintained C++ API and subprocess JSON contract](docs/backend_api_contract.md),
+  with field types, statuses, exact CLI examples, map metadata joins and errors.
+- [Windows VS Code setup and teammate responsibilities](docs/team_backend_handoff.md).
+- A stdlib-only [Python subprocess adapter](examples/backend_client.py) and
+  separate CTest contract/integration tests; CI remains offline with six jobs.
+- [Phase 7 executed validation and compatibility notes](docs/phase7_validation.md).
+
+Q3/Q4 are Person 2's work; PySide6/Folium/Qt WebEngine are Person 3's work.
+Those features remain unimplemented here. Sample routes are synthetic; official
+routes are incomplete historical observed connectivity, not bookable service.
+The earlier phase sections below retain implementation/setup history.
+
 ## Phase 6: Question 2 through two required cities
 
 Person 1's Q2 is implemented in the reusable C++17 `RequiredStops` API and
@@ -10,9 +29,8 @@ flights. Repeated visits and aliased endpoints are supported; waypoint order
 reports actual first encounters. Connections are `max(flights - 1, 0)`.
 
 See [Phase 6 semantics, correctness, commands and executed validation](docs/phase6_q2.md).
-Work continues in [draft PR #7](https://github.com/k-Darshan-chowdary/World-Airline-Route-Search/pull/7)
-on `feature/phase6-q2-required-cities`. Phases 1–5 are merged; Phase 6 remains
-unmerged for review. GUI, maps and teammates' Q3/Q4 remain future work.
+Phase 6 was merged through [PR #7](https://github.com/k-Darshan-chowdary/World-Airline-Route-Search/pull/7)
+at `aaa014a`. GUI, maps and teammates' Q3/Q4 remain future work.
 
 ```powershell
 .\build\airline_graph.exe --data-dir data/sample --from "Dallas, United States" --via-b "London, United Kingdom" --via-c "Tokyo, Japan" --to "Auckland, New Zealand" --json
