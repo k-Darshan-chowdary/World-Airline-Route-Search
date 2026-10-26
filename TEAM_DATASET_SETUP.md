@@ -132,7 +132,8 @@ previously verified local copy; do not silently substitute another dataset.
 ## CI and review boundaries
 
 `.github/workflows/dataset-tests.yml` runs on pull requests and pushes to
-`main`/`feature/**`. Its Windows and Linux jobs use CPython 3.13.1, immutable
+`main`/`feature/**`. Its Windows Server 2022 and Ubuntu 24.04 jobs use CPython
+3.13.1, immutable
 checkout/setup-python action revisions and the hash-locked PyArrow wheels.
 Tests use small synthetic fixtures, including actual Parquet IO. Network calls
 are blocked during the test run, skipped tests fail CI, and CI never calls
