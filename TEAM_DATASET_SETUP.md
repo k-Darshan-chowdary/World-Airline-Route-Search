@@ -1,5 +1,9 @@
 # Same Phase 3 dataset for all three teammates
 
+A printable [teammate Word guide](docs/Teammate_Dataset_Setup_Guide.docx) covers
+the steps below plus troubleshooting and a completion report for each teammate.
+This Markdown file remains the source of truth for setup.
+
 Each teammate runs the same command on their own Windows computer. This setup
 is only the Phase 3 dataset foundation; it does not run a route-search GUI,
 compile C++, implement BFS, or start Phase 4.
