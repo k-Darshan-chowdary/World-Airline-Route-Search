@@ -25,7 +25,12 @@ airline_warnings(airline_graph)
 add_executable(airline_graph_cli cpp/src/main.cpp)
 target_link_libraries(airline_graph_cli PRIVATE airline_graph)
 airline_warnings(airline_graph_cli)
-set_target_properties(airline_graph_cli PROPERTIES OUTPUT_NAME airline_graph)
+# The static library's compiler PDB and CLI's linker PDB otherwise share
+# airline_graph.pdb on MSVC Debug builds, causing LNK1201 during parallel builds.
+set_target_properties(airline_graph_cli PROPERTIES
+    OUTPUT_NAME airline_graph
+    PDB_NAME airline_graph_cli
+)
 
 include(CTest)
 if(BUILD_TESTING)

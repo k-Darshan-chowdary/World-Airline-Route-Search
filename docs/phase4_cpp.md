@@ -35,6 +35,8 @@ $pythonPath = (Resolve-Path .venv/Scripts/python.exe).Path
 ```
 
 Keep `C:\msys64\ucrt64\bin` on PATH so GCC runtime DLLs are available.
+MSVC Debug builds use a separate CLI linker PDB name so parallel builds do
+not collide with the graph library's compiler PDB.
 Use a separate `build-release` directory with `-DCMAKE_BUILD_TYPE=Release` to
 repeat with optimizations. For Visual Studio generators, also pass
 `--config Release` to build and `-C Release` to CTest. Production-only builds
