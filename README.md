@@ -1,6 +1,23 @@
 # World-Airline-Route-Search
 C++ and Python airline route search application using graph algorithms and interactive world map visualization.
 
+## Phase 6: Question 2 through two required cities
+
+Person 1's Q2 is implemented in the reusable C++17 `RequiredStops` API and
+CLI `--via-b B --via-c C`, with optional `--json`. Three directed BFS traversals
+compare A → B → C → D and A → C → B → D and return the walk with the fewest
+flights. Repeated visits and aliased endpoints are supported; waypoint order
+reports actual first encounters. Connections are `max(flights - 1, 0)`.
+
+See [Phase 6 semantics, correctness, commands and executed validation](docs/phase6_q2.md).
+Work continues in [draft PR #7](https://github.com/k-Darshan-chowdary/World-Airline-Route-Search/pull/7)
+on `feature/phase6-q2-required-cities`. Phases 1–5 are merged; Phase 6 remains
+unmerged for review. GUI, maps and teammates' Q3/Q4 remain future work.
+
+```powershell
+.\build\airline_graph.exe --data-dir data/sample --from "Dallas, United States" --via-b "London, United Kingdom" --via-c "Tokyo, Japan" --to "Auckland, New Zealand" --json
+```
+
 ## Phase 5: Question 1 shortest route with a connection limit
 
 Phase 5 adds the reusable C++17 `RouteSearch` API and CLI
@@ -10,8 +27,8 @@ Same-city queries use zero flights/zero connections; invalid inputs are errors,
 while unreachable and over-limit routes are distinct valid no-result statuses.
 
 See [Phase 5 semantics, API, CLI, tests and validation](docs/phase5_q1.md).
-Phases 1–4 are merged. Phase 5 is on `feature/phase5-q1-route-search` for draft
-review; Question 2 and GUI/map work remain future phases.
+Phase 5 is merged into `main` through PR #6 (`0bf8269`). Question 2 is added
+in Phase 6 above; GUI/map work remains future work.
 
 ## Phase 4: C++17 directed graph and BFS
 

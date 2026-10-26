@@ -2,7 +2,8 @@
 
 Phase 4 is merged into `main` through PR #5 (`4cbf979`).
 This phase covers graph storage, loading, generic BFS, CLI, CMake and tests.
-Question 1 is added in [Phase 5](phase5_q1.md); Question 2 and GUI/map remain future work.
+Question 1 is added in [Phase 5](phase5_q1.md), and Question 2 in
+[Phase 6](phase6_q2.md). GUI/map remains future work.
 
 ## Build in the VS Code terminal
 
@@ -47,7 +48,7 @@ can set `-DBUILD_TESTING=OFF` and need no Python.
 Reuse the existing Phase 3 generated directory or follow
 [TEAM_DATASET_SETUP.md](../TEAM_DATASET_SETUP.md) to reproduce it. Do not replace
 it with a synthetic fixture, overwrite its files or commit raw/generated data.
-Enable the three additional global CTest targets explicitly:
+Enable the additional global CTest targets explicitly:
 
 ```powershell
 .\.venv\Scripts\cmake.exe -S . -B build -DAIRLINE_GLOBAL_DATA_DIR:PATH=data/generated/2026-q3
@@ -61,7 +62,8 @@ all five tables, attribution and license against the committed Phase 3 lock,
 including provenance and count accounting. The global graph and CLI tests
 depend on that verification; a missing or altered dataset fails the run.
 Phase 4 introduced six CTest targets with global verification and three
-otherwise. Phase 5 expands these totals to ten and five respectively. The global
+otherwise. Phase 5 expands these totals to ten and five respectively; Phase 6
+expands them to fourteen and seven. The global
 graph test checks paths and shortest-distance
 certificates from all 819 sources, including unreachable vertices. Tests use
 explicit checks that remain active in Release mode.
