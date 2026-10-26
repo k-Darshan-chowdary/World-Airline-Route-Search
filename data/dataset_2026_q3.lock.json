@@ -1,0 +1,124 @@
+{
+  "lock_version": 1,
+  "sources": {
+    "ourairports_commit": "d97df1673cc5ba61a09b17ab5936091a669a04ca",
+    "files": {
+      "airports.csv": {
+        "url": "https://raw.githubusercontent.com/davidmegginson/ourairports-data/d97df1673cc5ba61a09b17ab5936091a669a04ca/airports.csv",
+        "bytes": 12752219,
+        "sha256": "27c6500d0a742edece15c5aaf960e08c01df0d4356c5c86255897b5d3749ad3b"
+      },
+      "countries.csv": {
+        "url": "https://raw.githubusercontent.com/davidmegginson/ourairports-data/d97df1673cc5ba61a09b17ab5936091a669a04ca/countries.csv",
+        "bytes": 24583,
+        "sha256": "2a9dbee691125b0cdb8ceb5fe227c48c903f99c488963b8e53e2ab366521c639"
+      },
+      "README-MrAirspace.md": {
+        "url": "https://raw.githubusercontent.com/MrAirspace/aircraft-flight-schedules/d4906dedba893bea4f7ad5966a81409d6a62336c/README.md",
+        "bytes": 17594,
+        "sha256": "6fb086614cbf82e21125a64f9895390443027c0c3204151e4e52ccdd0ffd5d52"
+      },
+      "LICENSE-ODbL.txt": {
+        "url": "https://raw.githubusercontent.com/MrAirspace/aircraft-flight-schedules/d4906dedba893bea4f7ad5966a81409d6a62336c/LICENSE-ODbL.txt",
+        "bytes": 25241,
+        "sha256": "d93f996262c15e7cf9d6b54f9f48e3f9d8b9c3a47fa2308dc8ef1f0f5cb88611"
+      },
+      "flights.parquet": {
+        "url": "https://github.com/MrAirspace/aircraft-flight-schedules/releases/download/aircraft_flight_schedules_2026_quarter3/2026_Q3_detailed_github.parquet",
+        "bytes": 1026954012,
+        "sha256": "d7cf25ffb128b4ceade6a2b898e6901f829ebf8ac065985fcdaf1787ffa1d1c1"
+      }
+    },
+    "verified_on": "2026-10-26",
+    "flight_source": "MrAirspace / aircraft-flight-schedules, derived from ADSB.lol",
+    "release_tag": "aircraft_flight_schedules_2026_quarter3",
+    "published_at": "2026-10-13T18:43:08Z",
+    "period_start_utc": "2026-07-01T00:00:00+00:00",
+    "period_end_exclusive_utc": "2026-10-01T00:00:00+00:00",
+    "license": "ODbL-1.0 (flights); Public Domain (OurAirports)",
+    "release_url": "https://github.com/MrAirspace/aircraft-flight-schedules/releases/tag/aircraft_flight_schedules_2026_quarter3",
+    "airport_terms_url": "https://ourairports.com/data/",
+    "notices": [
+      "Observed historical flights, not live schedules; incomplete and geographically uneven receiver coverage.",
+      "Airline is inferred from callsign, not verified operating carrier.",
+      "Airport candidates are inferred; strict filtering further reduces coverage."
+    ],
+    "source_commit": "d4906dedba893bea4f7ad5966a81409d6a62336c",
+    "release_id": 411950338,
+    "asset_id": 637792988
+  },
+  "expected_report": {
+    "format_version": 1,
+    "airport_metadata_counts": {
+      "ambiguous_icao_codes": 0,
+      "city_region_collision_airports": 334,
+      "city_region_collision_labels": 132,
+      "excluded_type": 407,
+      "input_rows": 86286,
+      "invalid_metadata": 689,
+      "missing_icao": 75670,
+      "usable_airports": 9186
+    },
+    "row_counts": {
+      "accepted_rows": 1241591,
+      "airports_used": 882,
+      "ambiguous_or_missing_airport": 343070,
+      "callsign_mismatch": 101030,
+      "cities": 819,
+      "city_self_loop": 55882,
+      "collapsed_airport_airline_rows": 1191264,
+      "collapsed_city_pair_rows": 1222308,
+      "countries": 85,
+      "endpoint_too_far": 26388,
+      "input_rows": 16018874,
+      "invalid_time": 2426654,
+      "invalid_track_coordinates": 0,
+      "missing_airline": 4572739,
+      "not_ground": 6246676,
+      "outside_period": 574603,
+      "unique_airport_airline_pairs": 50327,
+      "unique_city_edges": 19283,
+      "unmatched_airport": 430241
+    },
+    "policy": {
+      "ground_both_ends": true,
+      "max_endpoint_km": 5.0,
+      "single_icao_candidate": true,
+      "airline": "callsign-inferred; not verified operating carrier",
+      "coordinate": "lexicographically first retained airport ident per city; not city center",
+      "duplicates": "unique directed city pairs; accepted_input_rows are NOT unique flights or frequencies"
+    }
+  },
+  "outputs": {
+    "airports.tsv": {
+      "bytes": 64153,
+      "sha256": "d06a9b04edbc7c6b8353da1ee6699a518c65f2fe71279b1c2bf73a02467e1bf4"
+    },
+    "cities.tsv": {
+      "bytes": 35366,
+      "sha256": "843a70d1166e0df05283ce224b80267cfceb8893cf736a56e54d62584a933de0"
+    },
+    "city_representatives.tsv": {
+      "bytes": 22411,
+      "sha256": "993bd00095bddacca3a58514dc3f2df4b7e150dbf006ac90257dbaf15e7acb09"
+    },
+    "flight.txt": {
+      "bytes": 860742,
+      "sha256": "398d9f601d7ae9819cc4d567a72171bc33b4de0f7c0af8d52a16be660cfac30c"
+    },
+    "route_provenance.tsv": {
+      "bytes": 5683627,
+      "sha256": "c7dd4ad9bd2b6afa50176d99d4da3ce7cd8672a7ef399564623bf5959a9fff87"
+    }
+  },
+  "notices": {
+    "ATTRIBUTION.txt": {
+      "bytes": 519,
+      "sha256": "ce5db41414abb609f69a66641025b9215309234be0f14881aa3845c020b202b4"
+    },
+    "LICENSE-ODbL.txt": {
+      "bytes": 25241,
+      "sha256": "d93f996262c15e7cf9d6b54f9f48e3f9d8b9c3a47fa2308dc8ef1f0f5cb88611"
+    }
+  }
+}

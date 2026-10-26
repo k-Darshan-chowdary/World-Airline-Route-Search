@@ -3,6 +3,13 @@ C++ and Python airline route search application using graph algorithms and inter
 
 ## Phase 3: real-world dataset importer
 
+**All three teammates:** start with [TEAM_DATASET_SETUP.md](TEAM_DATASET_SETUP.md).
+In Windows VS Code PowerShell, run `py -3.13 scripts/setup_dataset.py` for the
+environment, all tests, pinned downloads/import and independent checksum checks.
+The onboarding branch is `feature/phase3-team-dataset-setup`, stacked on the
+importer PR. CI runs all 36 original tests plus 10 setup regressions without
+downloading worldwide raw data.
+
 The global observed-data importer is implemented on
 `feature/phase3-global-dataset-importer`, stacked onto the Phase 1/2 branch.
 It uses the verified **MrAirspace 2026 Q3 ADS-B observations** with pinned

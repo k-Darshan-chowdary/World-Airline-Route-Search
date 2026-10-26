@@ -23,7 +23,7 @@ def fingerprint(path):
 def verify(path, spec):
     actual = fingerprint(path)
     if any(actual[key] != spec[key] for key in ("bytes", "sha256")):
-        raise ValueError(f"{path.name}: size or SHA-256 differs from sources.json")
+        raise ValueError(f"{path.name}: size or SHA-256 differs from pinned expectation")
     return actual
 
 
