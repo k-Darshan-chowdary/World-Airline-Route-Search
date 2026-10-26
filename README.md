@@ -1,13 +1,26 @@
 # World-Airline-Route-Search
 C++ and Python airline route search application using graph algorithms and interactive world map visualization.
 
+## Phase 5: Question 1 shortest route with a connection limit
+
+Phase 5 adds the reusable C++17 `RouteSearch` API and CLI
+`--max-connections X` with optional `--json`. Connections are intermediate
+cities: a direct flight has zero, and the limit is strictly `connections < X`.
+Same-city queries use zero flights/zero connections; invalid inputs are errors,
+while unreachable and over-limit routes are distinct valid no-result statuses.
+
+See [Phase 5 semantics, API, CLI, tests and validation](docs/phase5_q1.md).
+Phases 1–4 are merged. Phase 5 is on `feature/phase5-q1-route-search` for draft
+review; Question 2 and GUI/map work remain future phases.
+
 ## Phase 4: C++17 directed graph and BFS
 
 The existing Phase 4 implementation is completed on
 `feature/phase4-cpp-directed-graph`: checked city IDs, coordinates, directed
 adjacency lists, strict UTF-8 dataset loading, and unweighted BFS with parent
 paths and unreachable results. Reverse routes exist only when present in the
-input. This phase does not implement Questions 1/2 or GUI/map features.
+input. Phase 4 did not implement Questions 1/2 or GUI/map features;
+Q1 is added in Phase 5 above.
 
 See [build, CLI and test instructions](docs/phase4_cpp.md) and
 [actual compilation/test evidence](docs/phase4_validation.md).
