@@ -1,17 +1,19 @@
-# Same Phase 3 dataset for all three teammates
+# Dataset setup for all three teammates
 
-Current integration: Phases 1–6 are merged. For C++ builds, Q1/Q2 JSON and
+Current integration: Phases 1–7 are merged into `main` (PR #8, `fded9a9`). For C++ builds, Q1/Q2 JSON and
 Person 2/3 integration, use [the Phase 7 backend handoff](docs/team_backend_handoff.md)
 and [versioned API contract](docs/backend_api_contract.md). This dataset setup
 and the existing Word guide remain available unchanged in purpose.
 
 A printable [teammate Word guide](docs/Teammate_Dataset_Setup_Guide.docx) covers
 the steps below plus troubleshooting and a completion report for each teammate.
-This Markdown file remains the source of truth for setup.
+This Markdown file is the current setup guide. The preserved Word guide records
+the original Phase 3 onboarding; use `main` as shown below instead of its old
+review branch.
 
 Each teammate runs the same command on their own Windows computer. This setup
-is only the Phase 3 dataset foundation; it does not run a route-search GUI,
-compile C++, implement BFS, or start Phase 4.
+prepares and verifies the dataset. Build and run the C++ backend separately
+using the [README](README.md#quick-start); the GUI is still pending.
 
 ## First-time Windows / VS Code onboarding
 
@@ -22,17 +24,17 @@ compile C++, implement BFS, or start Phase 4.
    and `py -3.13 --version` in a PowerShell terminal. Allow at least **3 GB** free
    disk space and internet access for the first run. The flight file alone is
    1,026,954,012 bytes; do not send it through Git or chat attachments.
-2. Use a separate clone for this review branch, especially if your existing
-   checkout has work in progress. In a folder you choose, run:
+2. Clone current `main` in a folder you choose. Use a separate clone if an
+   existing checkout has work in progress:
 
    ```powershell
-   git clone --branch feature/phase3-team-dataset-setup https://github.com/k-Darshan-chowdary/World-Airline-Route-Search.git World-Airline-Route-Search-Phase3
-   code World-Airline-Route-Search-Phase3
+   git clone https://github.com/k-Darshan-chowdary/World-Airline-Route-Search.git
+   code World-Airline-Route-Search
    ```
 
-   If using an existing **clean** clone, fetch the branch and switch to it;
-   preserve uncommitted work first. Do not switch or reset another teammate's
-   branch, force-push, merge the draft PRs, or copy data over `data/sample/`.
+   For an existing clone, inspect `git status` and preserve local changes before
+   updating from `main`. Do not reset another teammate's work or copy data over
+   `data/sample/`.
 3. In VS Code use **Terminal > New Terminal**, choose PowerShell, and confirm
    the terminal is at the repository root (where this guide and `scripts/` are).
    Run the one-command setup:
@@ -154,7 +156,7 @@ is the teammate setup's job and was also performed locally.
 Historical Phase 3 branch stack (now merged): PR #1's `feature/person1-graph-q1-q2` -> PR #2's
 `feature/phase3-global-dataset-importer` -> `feature/phase3-team-dataset-setup`.
 The original onboarding PR targeted the Phase 3 importer branch. New integration
-work starts from current `main`; the Phase 7 draft PR targets `main` separately.
+work starts from current `main`, which includes Phase 7 through PR #8.
 
 ## Data interpretation and redistribution
 

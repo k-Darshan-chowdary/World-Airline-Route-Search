@@ -1,15 +1,17 @@
 # Person 1: Phase 1 setup
 
+Historical setup record for Phase 1. Commands, paths, versions and scope below
+describe that stage. For the current implementation, start with the
+[README](../README.md) and [backend handoff](team_backend_handoff.md).
+
 Verified repository: https://github.com/k-Darshan-chowdary/World-Airline-Route-Search
-The live Chrome repository tab and signed-in account both identify
-`k-Darshan-chowdary`. The repository is private.
+The repository is private.
 
 Working folder: `%USERPROFILE%\OneDrive\Desktop\World-Airline-Route-Search`
 (this computer redirects the Windows Desktop to OneDrive).
 Cloned from `main`; feature branch: `feature/person1-graph-q1-q2`.
-Use this branch for changes and a draft PR targeting `main`; merge only after
-the user's review. The original `Airline_Team_Roles.docx` and `.gitignore`
-are preserved, and the original README introduction is retained.
+That branch was used for the original review. The team roles document and
+ignore rules were preserved at this stage; the README has since been updated.
 
 Tool versions verified in the VS Code integrated terminal on 2026-10-26:
 

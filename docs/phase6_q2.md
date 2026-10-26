@@ -5,10 +5,11 @@ Professor's question:
 > Give me the route with the smallest number of connections from city A to D
 > which passes cities B and C, in either order.
 
-Implemented on `feature/phase6-q2-required-cities`, continuing the existing
-[draft PR #7](https://github.com/k-Darshan-chowdary/World-Airline-Route-Search/pull/7)
-and its initial `9a48968` implementation. Base `main` contains merged Phase 5
-at `0bf82691a1365da02a052c7bb19fe0533fdd23a8`. Phase 6 stays draft and unmerged.
+Merged into `main` through [PR #7](https://github.com/k-Darshan-chowdary/World-Airline-Route-Search/pull/7)
+at `aaa014a5abce132e8ba6414566cf54e983f512bc`. The implementation was developed
+on `feature/phase6-q2-required-cities` from the merged Phase 5 baseline.
+The validation below records that revision; Phase 7 adds the maintained
+[backend contract](backend_api_contract.md) and two more CTest targets.
 
 ## Semantics and API
 

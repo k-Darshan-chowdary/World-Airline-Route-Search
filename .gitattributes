@@ -1,4 +1,5 @@
 # Keep manifests and code portable across Windows/Linux checkouts.
+*.md text eol=lf
 *.py text eol=lf
 *.json text eol=lf
 *.yml text eol=lf

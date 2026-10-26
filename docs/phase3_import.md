@@ -1,7 +1,7 @@
 # Phase 3: worldwide observed-data importer
 
-Phase 3 imports real online observations. C++ `Graph.cpp`, BFS, Q1/Q2 algorithms,
-GUI and Folium rendering come afterward. `data/sample/` remains the unchanged
+Phase 3 introduced the real observed-data importer. Graph loading, BFS and
+Q1/Q2 are now implemented; GUI and maps remain pending. `data/sample/` remains the unchanged
 synthetic 12-city/20-edge fixture; it is never replaced with downloaded data.
 
 For the current one-command teammate setup, independent reviewed checksum lock
@@ -197,11 +197,10 @@ ignored. Only source lock/schema, importer code, tests, attribution/license and
 small validation reports are intended for Git. Generated data is usable locally
 and reproducible through the pinned downloads; do not commit the 1 GB input.
 
-## Branch review boundary
+## Original review history
 
-Phase 3 branch: `feature/phase3-global-dataset-importer`, based on Phase 1/2
-commit `340ecd8e471c9b2c6109ebe2161daf0cf2b3319e`.
-Its draft PR targets `feature/person1-graph-q1-q2`, the head of draft PR #1,
-so the Phase 3 diff contains only importer changes. PR #1 remains unmerged.
-After PR #1 is reviewed/merged, coordinate the dependent PR's base before
-merging. Do not merge either PR automatically or build Graph/BFS in this phase.
+Phase 3 was developed on `feature/phase3-global-dataset-importer`, based on
+Phase 1/2 commit `340ecd8e471c9b2c6109ebe2161daf0cf2b3319e`. Its original
+review targeted `feature/person1-graph-q1-q2` to isolate importer changes.
+Those phases are merged; new work starts from current `main`. The measurements
+above remain the original Phase 3 evidence.

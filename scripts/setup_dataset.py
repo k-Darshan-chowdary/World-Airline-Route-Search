@@ -46,7 +46,7 @@ def provision(raw_dir=RAW, output_dir=OUTPUT, offline=False):
         counts = verify_outputs(output_dir)
     print(f"READY: {counts['cities']:,} cities; {counts['unique_city_edges']:,} directed routes; {counts['countries']} countries/territories", flush=True)
     print(f"Dataset: {output_dir.resolve()}", flush=True)
-    print("Historical observed connectivity; inferred airlines; incomplete coverage. Phase 4 has not started.")
+    print("Historical observed connectivity; inferred airlines; incomplete coverage. See README.md to build and run the backend.")
 
 
 def main(argv=None):
