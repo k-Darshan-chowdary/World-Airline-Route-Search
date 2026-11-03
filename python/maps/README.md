@@ -1,0 +1,1 @@
+Folium map rendering is currently implemented in `python/main_gui.py`. It validates each returned backend city ID and label against the selected `cities.tsv` before plotting latitude/longitude. Sample data is synthetic; routes are not live schedules.
