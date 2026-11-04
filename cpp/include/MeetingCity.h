@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace airline {
 
@@ -14,6 +15,7 @@ struct MeetingCityResult {
     std::optional<CityId> city;
     std::optional<std::int64_t> totalFlights;
     int fromA = -1, fromB = -1, fromC = -1;
+    std::vector<CityId> pathFromA, pathFromB, pathFromC;
 };
 
 MeetingCityResult findMeetingCity(const Graph& graph, CityId a, CityId b, CityId c);
