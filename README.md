@@ -5,7 +5,7 @@ routes between cities. The C++17 backend loads city and route data, finds routes
 with BFS, and returns readable output or JSON for the planned Python GUI.
 
 The original Q1/Q2 backend and dataset are complete through Phase 7. Q3/Q4
-and a GUI prototype are being reviewed in a separate integration PR. This project studies **historical observed connectivity**;
+and a GUI prototype have been implemented in the integration branch. The GUI still needs a Windows visual check. This project studies **historical observed connectivity**;
 it does not provide current schedules, fares, available seats or bookings.
 
 ## Project status
@@ -16,9 +16,9 @@ it does not provide current schedules, fares, available seats or bookings.
 | Q1: shortest route with fewer than `x` connections | Person 1 | Complete |
 | Q2: shortest walk through two required cities, in either order | Person 1 | Complete |
 | JSON v1 contract and Python adapter | Person 1 | Complete |
-| Q3: closed walk visiting reachable cities | Person 2's assigned area | Draft; exact for small graphs, heuristic otherwise |
-| Q4: meeting-city search | Person 2's assigned area | Implemented in draft PR; review pending |
-| PySide6 GUI and Folium / Qt WebEngine maps | Person 3's assigned area | Prototype in draft PR; local launch pending |
+| Q3: closed walk visiting reachable cities | Advanced routing | Implemented; exact at small sizes, heuristic at larger sizes |
+| Q4: meeting-city search | Advanced routing | Implemented and tested |
+| PySide6 GUI and Folium / Qt WebEngine maps | Desktop interface | Implemented; live Windows validation pending |
 
 See the [team roles](Airline_Team_Roles.docx) and
 [backend handoff](docs/team_backend_handoff.md) for responsibilities and integration.
@@ -60,11 +60,11 @@ coordinates represent one retained airport per city; sample coordinates are
 approximate city centers. Missing routes do not prove that no service exists.
 Read the [source and filtering notes](docs/phase3_import.md) before using the data.
 
-## Q3/Q4 and the desktop GUI (November 7 integration branch)
+## Q3/Q4 and the desktop GUI
 
-The team integration branch adds C++ implementations of the other two questions
-and a minimal optional desktop UI. These additions are under review, separate
-from the previously merged and tested Q1/Q2 backend.
+The project includes Q3/Q4 implementations and an optional desktop interface.
+The C++ algorithms are covered by cross-platform tests; live GUI validation
+is a separate step.
 
 - **Q3:** an exact shortest round trip visiting every reachable city when the
   reachable graph has at most 14 cities, returning to the start **only at the end**. Larger graphs use a clearly labeled
