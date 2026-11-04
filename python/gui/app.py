@@ -85,7 +85,7 @@ class MainWindow(QMainWindow):
         self.dataset = QComboBox()
         self.dataset.addItem("Synthetic sample (12 cities)", str(ROOT / "data" / "sample"))
         global_dir = ROOT / "data" / "generated" / "2026-q3"
-        if (global_dir.joinpath("cities.tsv").is_file():
+        if global_dir.joinpath("cities.tsv").is_file():
             self.dataset.addItem("Historical dataset (819 cities)", str(global_dir))
         layout.addWidget(QLabel("Dataset"))
         layout.addWidget(self.dataset)
