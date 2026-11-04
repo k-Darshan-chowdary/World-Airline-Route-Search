@@ -62,8 +62,10 @@ class ScalingTests(unittest.TestCase):
                 self.assertEqual(q3["flights"], count)
                 self.assertEqual(q3["reachable_cities"], count)
                 self.assertEqual(q3["method"], "exact" if count <= 18 else "heuristic")
-                if count > 14:
+                if count > 18:
                     self.assertFalse(q3["optimal"])
+                else:
+                    self.assertTrue(q3["optimal"])
                 q4, elapsed_q4 = run(
                     EXE, directory, "--meeting-a", names[0],
                     "--meeting-b", names[1], "--meeting-c", names[2]
