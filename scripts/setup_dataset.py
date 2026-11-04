@@ -1,4 +1,4 @@
-"""One-command teammate environment, tests, pinned downloads/import and verification."""
+"""Import the checksum-pinned historical observations dataset."""
 import argparse
 from pathlib import Path
 import subprocess
@@ -67,8 +67,6 @@ def main(argv=None):
                 python = prepare_environment()
             call([python, __file__, "--worker", "--raw-dir", args.raw_dir.resolve(), "--output-dir", args.output_dir.resolve()] + (["--offline"] if args.offline else []))
         else:
-            call([sys.executable, ROOT / "scripts/run_tests.py"])
-            call([sys.executable, ROOT / "scripts/check_phase2.py", "--expect-cities", "12", "--expect-edges", "20"])
             provision(args.raw_dir, args.output_dir, args.offline)
     except (OSError, ValueError, KeyError, subprocess.CalledProcessError) as exc:
         print(f"FAIL: {exc}", file=sys.stderr)
