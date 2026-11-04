@@ -30,7 +30,7 @@ class RouteTests(unittest.TestCase):
         p = call("--round-trip", "Dallas, United States", "--json")
         self.assertEqual(p.returncode, 0, p.stderr)
         r = json.loads(p.stdout)
-        self.assertEqual((r["query"], r["status"]), ("q3", "no_return"))
+        self.assertEqual((r["query"], r["status"]), ("q3", "no_tour"))
         self.assertEqual(r["route"], [])
         self.assertIsNone(r["flights"])
 
@@ -43,6 +43,7 @@ class RouteTests(unittest.TestCase):
         self.assertEqual((r["query"], r["status"]), ("q4", "found"))
         self.assertEqual(r["meeting_city"]["city"], "Paris, France")
         self.assertEqual(r["total_flights"], 6)
+        self.assertEqual([len(r["routes"][k]) for k in ("from_a", "from_b", "from_c")], [4, 3, 2])
         self.assertEqual(r["distances"], {"from_a": 3, "from_b": 2, "from_c": 1})
 
     def test_q4_missing_flag(self):
