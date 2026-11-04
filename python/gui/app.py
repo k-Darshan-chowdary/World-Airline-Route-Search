@@ -416,10 +416,11 @@ class MainWindow(QMainWindow):
         self.worker.start()
 
     def finish_search(self) -> None:
-        self.search_button.setEnabled(bool(self.city_rows))
+        ready = self.result_dialog is None
+        self.search_button.setEnabled(bool(self.city_rows) and ready)
         for button in self.nav_buttons:
-            button.setEnabled(True)
-        self.dataset.setEnabled(True)
+            button.setEnabled(ready)
+        self.dataset.setEnabled(ready)
         worker = self.worker
         self.worker = None
         if worker is not None:
@@ -552,6 +553,11 @@ class MainWindow(QMainWindow):
         if not self.expand_button.isEnabled():
             return
         self.map_holder.removeWidget(self.map_view)
+        for button in self.nav_buttons:
+            button.setEnabled(False)
+        self.dataset.setEnabled(False)
+        self.search_button.setEnabled(False)
+        self.expand_button.setEnabled(False)
         self.map_blank.setText("The map is open in the results window.")
         self.map_blank.show()
         notes = tuple(self.result_lines.text().split("\n\n")) if self.result_lines.isVisible() else ()
@@ -575,6 +581,11 @@ class MainWindow(QMainWindow):
             self.map_view.show()
         self.map_blank.hide()
         self.result_dialog = None
+        for button in self.nav_buttons:
+            button.setEnabled(True)
+        self.dataset.setEnabled(True)
+        self.search_button.setEnabled(bool(self.city_rows))
+        self.expand_button.setEnabled(self.map_view is not None)
 
 def main() -> None:
     app = QApplication([])
