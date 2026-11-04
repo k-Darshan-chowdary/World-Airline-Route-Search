@@ -58,6 +58,14 @@ class BridgeTests(unittest.TestCase):
         self.assertEqual(response["status"], "found")
         self.assertEqual(response["meeting_city"]["city"], "Paris, France")
         self.assertEqual(response["total_flights"], 6)
+        for origin in ("from_a", "from_b", "from_c"):
+            line = route_coordinates(
+                {"route": response["routes"][origin]}, self.cities
+            )
+            self.assertEqual(
+                len(line) - 1, response["distances"][origin],
+                f"Incorrect map path for {origin}",
+            )
 
     def test_bad_query(self):
         with self.assertRaises(ValueError):
