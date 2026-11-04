@@ -13,7 +13,8 @@ struct RoundTripResult {
     RoundTripStatus status = RoundTripStatus::NoTour;
     RoundTripMethod method = RoundTripMethod::Exact;
     // The path begins and ends at start and visits every vertex reachable
-    // from start. Repeated cities are permitted, but the starting city must\n    // not be revisited before the final step.
+    // from start. Repeated cities are permitted, but the starting city must
+    // not be revisited before the final step.
     std::vector<CityId> path;
     std::size_t reachableCities = 0;
     std::size_t flights = 0;
@@ -23,7 +24,9 @@ struct RoundTripResult {
 // start. For <=14 reachable cities uses exact BFS over (city, visited mask).
 // For larger reachable subgraphs uses a deterministic greedy *heuristic*;
 // the heuristic does NOT promise a minimum number of flights.
-// NoTour is exact for small graphs (or proven if return is impossible).\n// HeuristicFailed means the greedy construction got stuck, NOT proof that\n// no qualifying closed walk exists.
+// NoTour is exact for small graphs (or proven if return is impossible).
+// HeuristicFailed means the greedy construction got stuck, NOT proof that
+// no qualifying closed walk exists.
 RoundTripResult findRoundTrip(const Graph& graph, CityId start);
 RoundTripResult findRoundTrip(const Graph& graph, const std::string& start);
 } // namespace airline
