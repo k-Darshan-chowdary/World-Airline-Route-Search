@@ -105,7 +105,9 @@ int run(const std::vector<std::string>& args) {
                              "[--max-connections X | --via-b 'City, Country' --via-c 'City, Country'] [--json]]\n"
                              "Q1 requires connections < X; direct flight = 0 connections.\n"
                              "X must be decimal digits in [0, 9223372036854775807].\n"
-                             "Q2 visits both required cities in either order, minimizing flights; repeated visits are allowed.\n";
+                             "Q2 visits both required cities in either order, minimizing flights; repeated visits are allowed.\n"
+                             "Q3: --round-trip CITY (exact <=14 cities; heuristic above 14).\n"
+                             "Q4: --meeting-a CITY --meeting-b CITY --meeting-c CITY.\n";
                 if (json) std::cout << "{\"schema_version\":1,\"status\":\"help\",\"usage\":" << jsonString(usage) << "}\n";
                 else std::cout << usage;
                 return 0;
@@ -158,16 +160,16 @@ int run(const std::vector<std::string>& args) {
             const bool found = result.status == airline::RoundTripStatus::Found;
             const bool exact = result.method == airline::RoundTripMethod::Exact;
             if (json) {
-                std::cout << "{\\\"schema_version\\\":1,\\\"query\\\":\\\"q3\\\",\\\"status\\\":"
+                std::cout << "{\"schema_version\":1,\"query\":\"q3\",\"status\":"
                           << jsonString(found ? "found" : "no_return")
-                          << ",\\\"from\\\":" << jsonString(*roundTrip)
-                          << ",\\\"method\\\":" << jsonString(exact ? "exact" : "heuristic")
-                          << ",\\\"optimal\\\":" << (found && exact ? "true" : "false")
-                          << ",\\\"reachable_cities\\\":" << result.reachableCities
-                          << ",\\\"flights\\\":" << (found ? std::to_string(result.flights) : "null")
-                          << ",\\\"historical_observed_connectivity\\\":true,\\\"route\\\":";
+                          << ",\"from\":" << jsonString(*roundTrip)
+                          << ",\"method\":" << jsonString(exact ? "exact" : "heuristic")
+                          << ",\"optimal\":" << (found && exact ? "true" : "false")
+                          << ",\"reachable_cities\":" << result.reachableCities
+                          << ",\"flights\":" << (found ? std::to_string(result.flights) : "null")
+                          << ",\"historical_observed_connectivity\":true,\"route\":";
                 printJsonCities(graph, result.path);
-                std::cout << "}\\n";
+                std::cout << "}\n";
             } else if (found) {
                 std::cout << (exact ? "Exact shortest" : "Heuristic (not guaranteed shortest)")
                           << " closed walk (" << result.flights << " flights; "
@@ -176,37 +178,37 @@ int run(const std::vector<std::string>& args) {
                     if (i) std::cout << " -> ";
                     std::cout << graph.cityName(result.path[i]);
                 }
-                std::cout << '\\n';
+                std::cout << '\n';
             } else {
-                std::cout << "No closed walk exists: a reachable city cannot return to the start.\\n";
+                std::cout << "No closed walk exists: a reachable city cannot return to the start.\n";
             }
         } else if (meeting) {
             const auto result = airline::findMeetingCity(graph, *meetingA, *meetingB, *meetingC);
             if (json) {
-                std::cout << "{\\\"schema_version\\\":1,\\\"query\\\":\\\"q4\\\",\\\"status\\\":"
+                std::cout << "{\"schema_version\":1,\"query\":\"q4\",\"status\":"
                           << jsonString(result.city ? "found" : "unreachable")
-                          << ",\\\"from_a\\\":" << jsonString(*meetingA)
-                          << ",\\\"from_b\\\":" << jsonString(*meetingB)
-                          << ",\\\"from_c\\\":" << jsonString(*meetingC)
-                          << ",\\\"historical_observed_connectivity\\\":true,\\\"meeting_city\\\":";
+                          << ",\"from_a\":" << jsonString(*meetingA)
+                          << ",\"from_b\":" << jsonString(*meetingB)
+                          << ",\"from_c\":" << jsonString(*meetingC)
+                          << ",\"historical_observed_connectivity\":true,\"meeting_city\":";
                 if (result.city) {
-                    std::cout << "{\\\"id\\\":" << *result.city
-                              << ",\\\"city\\\":" << jsonString(graph.cityName(*result.city))
-                              << "},\\\"total_flights\\\":" << *result.totalFlights
-                              << ",\\\"distances\\\":{\\\"from_a\\\":" << result.fromA
-                              << ",\\\"from_b\\\":" << result.fromB
-                              << ",\\\"from_c\\\":" << result.fromC << "}";
+                    std::cout << "{\"id\":" << *result.city
+                              << ",\"city\":" << jsonString(graph.cityName(*result.city))
+                              << "},\"total_flights\":" << *result.totalFlights
+                              << ",\"distances\":{\"from_a\":" << result.fromA
+                              << ",\"from_b\":" << result.fromB
+                              << ",\"from_c\":" << result.fromC << "}";
                 } else {
-                    std::cout << "null,\\\"total_flights\\\":null,\\\"distances\\\":null";
+                    std::cout << "null,\"total_flights\":null,\"distances\":null";
                 }
-                std::cout << "}\\n";
+                std::cout << "}\n";
             } else if (result.city) {
                 std::cout << "Best meeting city: " << graph.cityName(*result.city)
                           << " (sum of directed shortest flights: " << *result.totalFlights
                           << "; distances: " << result.fromA << ", " << result.fromB
-                          << ", " << result.fromC << ")\\n";
+                          << ", " << result.fromC << ")\n";
             } else {
-                std::cout << "No meeting city reachable from all three origins.\\n";
+                std::cout << "No meeting city reachable from all three origins.\n";
             }
         } else if (viaB) {
             const auto result = airline::searchRequiredStops(graph, *from, *viaB, *viaC, *to);
