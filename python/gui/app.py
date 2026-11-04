@@ -355,15 +355,29 @@ class MainWindow(QMainWindow):
         try:
             self.city_rows = read_cities(Path(self.dataset.currentData()))
             names = [row["city"] for row in self.city_rows]
-            for controls in self.inputs.values():
-                for widget in controls.values():
+            suggested = {
+                "q1": {"from": "Dallas, United States", "to": "New York, United States"},
+                "q2": {"from": "Dallas, United States",
+                       "via_b": "New York, United States",
+                       "via_c": "London, United Kingdom",
+                       "to": "Paris, France"},
+                "q3": {"round_trip": "Auckland, New Zealand"},
+                "q4": {"meeting_a": "Dallas, United States",
+                       "meeting_b": "New York, United States",
+                       "meeting_c": "London, United Kingdom"},
+            }
+            for question, controls in self.inputs.items():
+                for key, widget in controls.items():
                     if not isinstance(widget, QComboBox):
                         continue
                     before = widget.currentText()
                     widget.clear()
                     widget.addItems(names)
+                    preferred = suggested.get(question, {}).get(key, "")
                     if before in names:
                         widget.setCurrentText(before)
+                    elif preferred in names:
+                        widget.setCurrentText(preferred)
             self.reset_result(f"Loaded {len(names)} cities.")
             self.clear_map()
         except Exception as exc:
