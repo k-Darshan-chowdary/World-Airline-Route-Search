@@ -89,7 +89,8 @@ RoundTripResult findRoundTrip(const Graph& graph, CityId start) {
             for (CityId neighbor : graph.neighbors(reachable[at])) {
                 const int next = index[neighbor];
                 if (next < 0) continue;
-                const std::size_t nextMask = mask | (std::size_t(1) << next);\n                if (neighbor == start && nextMask != full) continue;
+                const std::size_t nextMask = mask | (std::size_t(1) << next);
+                if (neighbor == start && nextMask != full) continue;
                 const auto nk = key(next, nextMask);
                 if (seen[nk]) continue;
                 seen[nk] = 1;
