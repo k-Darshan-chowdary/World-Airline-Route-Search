@@ -72,11 +72,13 @@ is a separate step.
   impossible if a reachable city cannot return to the start.
 - **Q4:** find a meeting city distinct from all three origins that minimizes
   the sum of directed shortest flight counts from the three origins.
-- **GUI:** PySide6 forms for Q1–Q4, a nonblocking C++ subprocess call, displayed
-  JSON, and optional Folium map lines for returned routes (three colors for Q4). Maps show city-level
-  graph edges between representative coordinates, not actual flight tracks.
+- **GUI:** four always-visible question buttons, concise route results, a separate
+  enlarged result/map window, and an optional collapsible JSON view. Searches run
+  the compiled C++ backend in a background thread. Q4 routes are colored by
+  traveler and labeled in a legend. Map lines connect representative city
+  coordinates, not measured aircraft tracks.
 
-CLI examples (after compiling this branch):
+CLI examples (after building the C++ program):
 
 ```cmd
 build\airline_graph.exe --data-dir data/sample --round-trip "Auckland, New Zealand" --json
@@ -96,6 +98,26 @@ data when `data/generated/2026-q3/cities.tsv` is present. It needs a compiled
 `airline_graph` executable in a documented build location. WebEngine and map
 tiles may require internet access. If the window or map fails, use the tested
 CLI for the final demonstration rather than claim the GUI is verified.
+
+For a guided tour of each question and screenshots, see
+[GUI demonstration and testing](docs/gui_walkthrough.md). The interface
+distinguishes **flights/edges** from **intermediate connections**, and marks
+large-graph Q3 output as heuristic rather than proven shortest.
+
+To print the sample graph's stored input connections for inspection, run
+`type data\\sample\\flight.txt` in Windows CMD. The input uses one
+tab-separated directed connection per line. The sample and global data
+include cities with no outgoing flights when present in the metadata.
+
+To run the repeatable 6, 20 and 50-vertex examples and print measured
+end-to-end runtimes (including process startup and file loading), run:
+
+```cmd
+.\.venv\Scripts\ctest.exe --test-dir build -V -R cpp_graph_size_checks
+```
+
+Actual times depend on the machine; record your own measured output for the
+presentation instead of using an estimated runtime.
 
 See [Q3/Q4 algorithm details](docs/q3_q4_algorithms.md).
 The professor's Q3 asks for the *minimum*; its exactness restriction must be
