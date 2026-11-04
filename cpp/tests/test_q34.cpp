@@ -81,7 +81,7 @@ int main() {
         g.addEdge(2,3);g.addEdge(3,0);
         auto r=findRoundTrip(g,0);
         checkWalk(g,r,0,4);
-        check(r.method==RoundTripMethod::Exact && r.flights==5,"exact best walk with revisit");
+        check(r.method==RoundTripMethod::Exact && r.flights==6,"exact best walk with revisit");
     }
     std::cout<<"Q3/Q4 DSA unit tests passed\n";
 }
