@@ -16,7 +16,7 @@ it does not provide current schedules, fares, available seats or bookings.
 | Q1: shortest route with fewer than `x` connections | Person 1 | Complete |
 | Q2: shortest walk through two required cities, in either order | Person 1 | Complete |
 | JSON v1 contract and Python adapter | Person 1 | Complete |
-| Q3: closed walk visiting reachable cities | Advanced routing | Implemented; exact at small sizes, heuristic at larger sizes |
+| Q3: closed walk visiting reachable cities | Advanced routing | Implemented; exact at ≤18 reachable cities, feasible tours proven at larger sizes (length approximate) |
 | Q4: meeting-city search | Advanced routing | Implemented and tested |
 | PySide6 GUI and Folium / Qt WebEngine maps | Desktop interface | Implemented; live Windows validation pending |
 
@@ -66,10 +66,12 @@ The project includes Q3/Q4 implementations and an optional desktop interface.
 The C++ algorithms are covered by cross-platform tests; live GUI validation
 is a separate step.
 
-- **Q3:** an exact shortest round trip visiting every reachable city when the
-  reachable graph has at most 14 cities, returning to the start **only at the end**. Larger graphs use a clearly labeled
-  **heuristic**; its route is not guaranteed to be the shortest and it can fail to find a valid tour. A route is
-  impossible if a reachable city cannot return to the start.
+- **Q3:** shortest end-only round trip using an exact state-space BFS for up to
+  **18 reachable cities**. On larger graphs, strongly connected components
+  determine **exactly whether a valid tour exists**, and a BFS-based construction
+  produces one when possible. The constructed length is labeled **heuristic**
+  because it is not necessarily minimal. A reachable city unable to return
+  to the start makes a tour impossible, but that is not the only no-tour case.
 - **Q4:** find a meeting city distinct from all three origins that minimizes
   the sum of directed shortest flight counts from the three origins.
 - **GUI:** PySide6 forms for Q1–Q4, a nonblocking C++ subprocess call, displayed
