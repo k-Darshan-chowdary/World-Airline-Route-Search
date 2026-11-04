@@ -77,6 +77,9 @@ if(BUILD_TESTING)
     target_link_libraries(airline_q34_tests PRIVATE airline_graph)
     airline_warnings(airline_q34_tests)
     add_test(NAME cpp_q34_tests COMMAND airline_q34_tests)
+    add_test(NAME cpp_q34_cli COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cpp/tests/test_q34_cli.py"
+        "$<TARGET_FILE:airline_graph_cli>" "${CMAKE_CURRENT_SOURCE_DIR}/data/sample")
 
     # Explicit opt-in: normal offline CI needs no worldwide download. A supplied
     # directory is mandatory and must match the existing Phase 3 checksum lock.
