@@ -42,13 +42,13 @@ def describe_result(result: dict) -> RouteSummary:
         messages = {
             "unreachable": "No directed route exists for these inputs.",
             "connection_limit": "The shortest route exceeds the strict connection limit.",
-            "no_tour": "No valid round trip visits all reachable cities before returning to the start.",
+            "no_tour": "No directed round trip can visit all reachable cities without returning to the start early.",
             "heuristic_failed": "The large-graph heuristic did not find a tour. A valid tour may still exist.",
         }
         title = {
             "q1": "No qualifying route",
             "q2": "Required route unavailable",
-            "q3": "Round trip not found",
+            "q3": "No valid round trip exists",
             "q4": "No common meeting city",
         }.get(question, "No result")
         detail = messages.get(status, "No qualifying result was found.")
@@ -86,11 +86,11 @@ def describe_result(result: dict) -> RouteSummary:
     if question == "q3":
         exact = result.get("optimal") is True and result.get("method") == "exact"
         return RouteSummary(
-            "Shortest round trip" if exact else "Approximate round trip",
+            "Shortest round trip" if exact else "Valid tour · approximate length",
             f"Visits {result['reachable_cities']} reachable cities; starts and returns to the same city only at the end.",
             f"{result['flights']} flights · {'EXACT' if exact else 'HEURISTIC'}",
             (route_names(result["route"]),),
-            warning=("" if exact else "This route is not guaranteed to use the fewest possible flights."),
+            warning=("" if exact else "This tour is valid, but its length is not guaranteed to be the minimum."),
         )
 
     if question == "q4":

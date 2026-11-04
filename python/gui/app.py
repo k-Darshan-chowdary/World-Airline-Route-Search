@@ -234,8 +234,8 @@ class MainWindow(QMainWindow):
                 form.addRow("Connections < x", count)
             if question == "q3":
                 form.addRow(label(
-                    "Exact minimum on up to 14 reachable cities. "
-                    "Larger graphs use a clearly labeled heuristic.",
+                    "Exact minimum for up to 18 reachable cities. "
+                    "For larger graphs, feasibility is proved; the constructed tour may not be shortest.",
                     name="footnote"
                 ))
             self.inputs[question] = controls

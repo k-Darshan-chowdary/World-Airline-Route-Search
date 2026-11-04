@@ -66,11 +66,11 @@ class PresentationTests(unittest.TestCase):
     def test_q3_heuristic(self):
         data = {
             "query": "q3", "status": "found", "flights": 20,
-            "reachable_cities": 15, "method": "heuristic", "optimal": False,
+            "reachable_cities": 20, "method": "heuristic", "optimal": False,
             "route": [city("A", 0), city("B", 1), city("A", 0)],
         }
         result = describe_result(data)
-        self.assertIn("Approximate", result.title)
+        self.assertIn("approximate length", result.title)
         self.assertIn("HEURISTIC", result.metric)
         self.assertIn("not guaranteed", result.warning)
 

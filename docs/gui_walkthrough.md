@@ -52,8 +52,9 @@ are distinct from the selected meeting city.
 - Q2 compares the two orders of the required cities, checking directed
   reachability on every segment.
 - Q3 may not return to its start early. Its state-space BFS is exact
-  for at most 14 reachable cities. Its larger-graph heuristic is explicitly
-  **not guaranteed minimum** and can fail to find an existing tour.
+  for at most 18 reachable cities. For larger graphs, SCC analysis proves
+  whether a tour exists and constructs a valid one when feasible, but its
+  **flight count is not guaranteed minimum**.
 - Q4 runs BFS from three origins and selects the meeting city that minimizes
   the sum of their directed shortest-flight distances, then prints all
   three reconstructed paths.
@@ -61,7 +62,7 @@ are distinct from the selected meeting city.
 ## Dataset sizes and running time
 
 The instructor recommends small hand-verifiable examples and larger feasible
-graphs. Our tests cover the 12-city sample, generated 6/20/50-city directed
+graphs. Our tests cover the 12-city sample, generated 6/18/20/50-city directed
 cycles, and the checksum-locked historical dataset when available.
 
 To print **measured** end-to-end times (including process startup and file
@@ -73,7 +74,7 @@ loading) for 6, 20 and 50 vertices, run after building:
 
 Use real measurements from your computer in the presentation. These are not
 isolated algorithm timings, and Q3 changes from exact to heuristic above
-14 reachable cities.
+18 reachable cities.
 
 To inspect the small directed input file, run:
 
@@ -89,7 +90,8 @@ to the second. Cities that appear only as destinations still have vertices.
 - [ ] Four question controls are visible without horizontal tab scrolling.
 - [ ] Q1 success and strict-limit failure have distinct messages.
 - [ ] Q2 displays its required-city order and whole route.
-- [ ] Q3 exact and approximate results are visibly different.
+- [ ] Q3 exact and valid-but-not-proven-shortest results are visibly different.
+- [ ] A large no-tour result is correctly identified as impossible, not merely a failed greedy attempt.
 - [ ] Q4 shows three color-coded paths and their legend.
 - [ ] An unreachable route, a no-tour case, and invalid input are legible.
 - [ ] The results pop-up opens with the map, closes, and returns the map.

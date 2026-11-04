@@ -47,7 +47,7 @@ class ScalingTests(unittest.TestCase):
     def test_six_twenty_and_fifty_vertices(self):
         with tempfile.TemporaryDirectory(prefix="airline-size-check-") as tmp:
             directory = Path(tmp)
-            for count in (6, 20, 50):
+            for count in (6, 18, 20, 50):
                 names = fixture(directory, count)
                 q1, elapsed_q1 = run(
                     EXE, directory, "--from", names[0], "--to",
@@ -61,7 +61,7 @@ class ScalingTests(unittest.TestCase):
                 self.assertEqual(q3["status"], "found")
                 self.assertEqual(q3["flights"], count)
                 self.assertEqual(q3["reachable_cities"], count)
-                self.assertEqual(q3["method"], "exact" if count <= 14 else "heuristic")
+                self.assertEqual(q3["method"], "exact" if count <= 18 else "heuristic")
                 if count > 14:
                     self.assertFalse(q3["optimal"])
                 q4, elapsed_q4 = run(
