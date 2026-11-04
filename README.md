@@ -4,8 +4,8 @@ A three-person university DSA project that uses a directed graph to search for
 routes between cities. The C++17 backend loads city and route data, finds routes
 with BFS, and returns readable output or JSON for the planned Python GUI.
 
-The backend and dataset setup are complete through Phase 7. Q3/Q4 and the GUI
-are still pending. This project studies **historical observed connectivity**;
+The original Q1/Q2 backend and dataset are complete through Phase 7. Q3/Q4
+and a GUI prototype are being reviewed in a separate integration PR. This project studies **historical observed connectivity**;
 it does not provide current schedules, fares, available seats or bookings.
 
 ## Project status
@@ -16,9 +16,9 @@ it does not provide current schedules, fares, available seats or bookings.
 | Q1: shortest route with fewer than `x` connections | Person 1 | Complete |
 | Q2: shortest walk through two required cities, in either order | Person 1 | Complete |
 | JSON v1 contract and Python adapter | Person 1 | Complete |
-| Q3: closed walk visiting reachable cities | Person 2 | Pending |
-| Q4: meeting-city search | Person 2 | Pending |
-| PySide6 GUI and Folium / Qt WebEngine maps | Person 3 | Pending |
+| Q3: closed walk visiting reachable cities | Person 2's assigned area | Draft; exact for small graphs, heuristic otherwise |
+| Q4: meeting-city search | Person 2's assigned area | Implemented in draft PR; review pending |
+| PySide6 GUI and Folium / Qt WebEngine maps | Person 3's assigned area | Prototype in draft PR; local launch pending |
 
 See the [team roles](Airline_Team_Roles.docx) and
 [backend handoff](docs/team_backend_handoff.md) for responsibilities and integration.
