@@ -181,9 +181,9 @@ int run(const std::vector<std::string>& args) {
                 std::cout << '\n';
             } else {
                 if (result.status == airline::RoundTripStatus::NoTour)
-                    std::cout << "No valid tour exists that visits every reachable city and returns only at the end.\\n";
+                    std::cout << "No valid tour exists that visits every reachable city and returns only at the end.\n";
                 else
-                    std::cout << "Greedy heuristic could not find a valid tour; feasibility is unknown.\\n";
+                    std::cout << "Greedy heuristic could not find a valid tour; feasibility is unknown.\n";
             }
         } else if (meeting) {
             const auto result = airline::findMeetingCity(graph, *meetingA, *meetingB, *meetingC);
