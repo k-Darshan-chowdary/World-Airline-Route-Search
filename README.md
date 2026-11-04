@@ -67,13 +67,13 @@ and a minimal optional desktop UI. These additions are under review, separate
 from the previously merged and tested Q1/Q2 backend.
 
 - **Q3:** an exact shortest round trip visiting every reachable city when the
-  reachable graph has at most 14 cities. Larger graphs use a clearly labeled
-  **heuristic**; its route is not guaranteed to be the shortest. A route is
+  reachable graph has at most 14 cities, returning to the start **only at the end**. Larger graphs use a clearly labeled
+  **heuristic**; its route is not guaranteed to be the shortest and it can fail to find a valid tour. A route is
   impossible if a reachable city cannot return to the start.
 - **Q4:** find a meeting city distinct from all three origins that minimizes
   the sum of directed shortest flight counts from the three origins.
 - **GUI:** PySide6 forms for Q1–Q4, a nonblocking C++ subprocess call, displayed
-  JSON, and optional Folium map lines for returned routes. Maps show city-level
+  JSON, and optional Folium map lines for returned routes (three colors for Q4). Maps show city-level
   graph edges between representative coordinates, not actual flight tracks.
 
 CLI examples (after compiling this branch):
