@@ -145,7 +145,7 @@ class MainWindow(QMainWindow):
                ("meeting_c", "Traveler C")),
     }
     NAMES = (
-        "Q1 · Shortest", "Q2 · Via cities", "Q3 · Round trip", "Q4 · Meeting"
+        "Q1 Route", "Q2 Stops", "Q3 Tour", "Q4 Meet"
     )
 
     def __init__(self) -> None:
