@@ -204,7 +204,13 @@ int run(const std::vector<std::string>& args) {
                 } else {
                     std::cout << "null,\"total_flights\":null,\"distances\":null";
                 }
-                std::cout << "}\n";
+                std::cout << ",\"routes\":{\"from_a\":";
+                printJsonCities(graph, result.pathFromA);
+                std::cout << ",\"from_b\":";
+                printJsonCities(graph, result.pathFromB);
+                std::cout << ",\"from_c\":";
+                printJsonCities(graph, result.pathFromC);
+                std::cout << "}}\n";
             } else if (result.city) {
                 std::cout << "Best meeting city: " << graph.cityName(*result.city)
                           << " (sum of directed shortest flights: " << *result.totalFlights
