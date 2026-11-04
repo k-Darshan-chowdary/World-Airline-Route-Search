@@ -21,6 +21,11 @@ MeetingCityResult findMeetingCity(const Graph& graph, CityId a, CityId b, CityId
             best.fromA = da; best.fromB = db; best.fromC = dc;
         }
     }
+    if (best.city) {
+        best.pathFromA = aa.pathTo(*best.city);
+        best.pathFromB = bb.pathTo(*best.city);
+        best.pathFromC = cc.pathTo(*best.city);
+    }
     return best;
 }
 
