@@ -107,8 +107,8 @@ RoundTripResult findRoundTrip(const Graph& graph, CityId start) {
     } else {
         // Greedily choose the closest unvisited vertex by directed BFS
         // distance, and mark intermediate vertices encountered en route.
-        // Since the reachable component is strongly connected this always
-        // produces a feasible closed walk, but it is NOT an optimality proof.
+        // Avoid an early return to the start. Greedy choices can get stuck;
+        // successful heuristic walks are valid but not necessarily shortest.
         std::vector<bool> visited(graph.cityCount(), false);
         visited[start] = true;
         std::size_t count = 1;
