@@ -106,7 +106,7 @@ int run(const std::vector<std::string>& args) {
                              "Q1 requires connections < X; direct flight = 0 connections.\n"
                              "X must be decimal digits in [0, 9223372036854775807].\n"
                              "Q2 visits both required cities in either order, minimizing flights; repeated visits are allowed.\n"
-                             "Q3: --round-trip CITY (exact <=14 cities; heuristic above 14).\n"
+                             "Q3: --round-trip CITY; return to start only at end (exact <=14; heuristic above).\n"
                              "Q4: --meeting-a CITY --meeting-b CITY --meeting-c CITY.\n";
                 if (json) std::cout << "{\"schema_version\":1,\"status\":\"help\",\"usage\":" << jsonString(usage) << "}\n";
                 else std::cout << usage;
@@ -161,7 +161,7 @@ int run(const std::vector<std::string>& args) {
             const bool exact = result.method == airline::RoundTripMethod::Exact;
             if (json) {
                 std::cout << "{\"schema_version\":1,\"query\":\"q3\",\"status\":"
-                          << jsonString(found ? "found" : "no_return")
+                          << jsonString(found ? "found" : result.status == airline::RoundTripStatus::NoTour ? "no_tour" : "heuristic_failed")
                           << ",\"from\":" << jsonString(*roundTrip)
                           << ",\"method\":" << jsonString(exact ? "exact" : "heuristic")
                           << ",\"optimal\":" << (found && exact ? "true" : "false")
@@ -180,7 +180,10 @@ int run(const std::vector<std::string>& args) {
                 }
                 std::cout << '\n';
             } else {
-                std::cout << "No closed walk exists: a reachable city cannot return to the start.\n";
+                if (result.status == airline::RoundTripStatus::NoTour)
+                    std::cout << "No valid tour exists that visits every reachable city and returns only at the end.\\n";
+                else
+                    std::cout << "Greedy heuristic could not find a valid tour; feasibility is unknown.\\n";
             }
         } else if (meeting) {
             const auto result = airline::findMeetingCity(graph, *meetingA, *meetingB, *meetingC);
