@@ -72,13 +72,41 @@ int main() {
         check(r.status==RoundTripStatus::Found && r.flights==0 &&
               r.path==std::vector<CityId>{0},"isolated zero-leg walk");
     }
-    for(int n: {14,15}) {
+    // Exact mode supports 18 reachable cities; larger cycles still get
+    // a valid (not necessarily minimum) component-based tour.
+    for(int n: {14, 15, 18, 19, 50}) {
         Graph g=create(n);
-        for(int i=0;i<n;++i)g.addEdge(i,(i+1)%n);
+        for(int i=0;i<n;++i) g.addEdge(i,(i+1)%n);
         auto r=findRoundTrip(g,0);
-        check(r.method==(n==14?RoundTripMethod::Exact:RoundTripMethod::Heuristic),"exact cutoff");
-        check(r.flights==static_cast<std::size_t>(n),"cycle route count");
+        check(r.method==(n<=18?RoundTripMethod::Exact:RoundTripMethod::Heuristic),
+              "exact cutoff");
+        check(r.flights==static_cast<std::size_t>(n),"directed cycle length");
         checkWalk(g,r,0,n);
+    }
+    {
+        // 19 vertices: the shortest-looking neighbor is a dead end leading
+        // back to A; the other branch is a large SCC that must be covered
+        // first. Nearest-neighbor greedy can get stuck; SCC ordering succeeds.
+        Graph g=create(19);
+        g.addEdge(0,1);
+        g.addEdge(1,2);
+        g.addEdge(2,0);
+        g.addEdge(1,3);
+        for(int i=3;i<18;++i) g.addEdge(i,i+1);
+        g.addEdge(18,1);
+        auto r=findRoundTrip(g,0);
+        check(r.method==RoundTripMethod::Heuristic,"large SCC mode");
+        checkWalk(g,r,0,19);
+        check(r.path[r.path.size()-2] == 2,"must finish through sink SCC");
+    }
+    {
+        // A-centered star: all vertices reach A, yet the only way
+        // to visit two leaves would revisit A before the end.
+        Graph g=create(20);
+        for(int i=1;i<20;++i) { g.addEdge(0,i);g.addEdge(i,0); }
+        auto r=findRoundTrip(g,0);
+        check(r.status==RoundTripStatus::NoTour,
+              "branched SCC DAG proves no end-only tour");
     }
     {
         Graph g=create(4);
