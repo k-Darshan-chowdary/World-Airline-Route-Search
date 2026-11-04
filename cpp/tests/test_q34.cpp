@@ -19,6 +19,8 @@ void checkWalk(const Graph& g, const RoundTripResult& r, CityId start, int count
     check(r.status == RoundTripStatus::Found, "walk must be found");
     check(!r.path.empty() && r.path.front() == start && r.path.back() == start, "closed walk");
     check(r.flights == r.path.size()-1, "flight count");
+    for (std::size_t i=1; i+1<r.path.size(); ++i)
+        check(r.path[i] != start, "start city must occur only at beginning and end");
     std::vector<bool> seen(g.cityCount());
     for (std::size_t i = 0; i < r.path.size(); ++i) {
         seen[r.path[i]] = true;
