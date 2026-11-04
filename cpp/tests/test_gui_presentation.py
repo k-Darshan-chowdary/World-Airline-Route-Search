@@ -97,7 +97,7 @@ class PresentationTests(unittest.TestCase):
         self.assertEqual(len(result.lines), 3)
         self.assertEqual(len(result.legend), 3)
         self.assertEqual([color for _, color in result.legend], list(Q4_COLORS.values()))
-        self.assertIn("6 total flight legs", result.metric)
+        self.assertIn("6 flight legs · 3 connections", result.metric)
 
     def test_no_meeting(self):
         result = describe_result({"query": "q4", "status": "unreachable"})
