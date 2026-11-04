@@ -99,6 +99,35 @@ to the second. Cities that appear only as destinations still have vertices.
 
 The C++ and subprocess tests do not replace a real graphical smoke test.
 
+## Qt startup and interaction regression
+
+The Q3 form is a one-element tuple of `(key, caption)` pairs; the trailing
+comma is required. Without it, MainWindow iterates the two strings and raises
+`ValueError: too many values to unpack` before startup finishes.
+
+With GUI dependencies installed, run the actual window regression offline:
+
+~~~cmd
+set QT_QPA_PLATFORM=offscreen
+set QTWEBENGINE_CHROMIUM_FLAGS=--disable-gpu
+.\.venv\Scripts\python.exe cpp\tests\test_gui_window.py build\airline_graph.exe --require-qt
+set QT_QPA_PLATFORM=
+set QTWEBENGINE_CHROMIUM_FLAGS=
+~~~
+
+Use `build\Release\airline_graph.exe` for MSVC Release builds. The test
+constructs MainWindow, checks all four forms and navigation, recovers from a
+dataset read failure, runs Q1-Q4 through the real worker/CLI, expands JSON,
+and moves the same WebEngine widget into and out of the result dialog.
+It captures generated map HTML before web navigation, so it does not verify
+remote map tiles or CDN availability.
+
+CTest registers `cpp_gui_window` with `QT_QPA_PLATFORM=offscreen`. If PySide6
+is absent, exit 77 is explicitly reported as **skipped**, not passed. Broken
+Qt imports or construction fail. The separate Windows GUI CI job installs
+the optional dependencies and uses `--require-qt`, so missing Qt fails there.
+Normal C++/dataset jobs do not need GUI dependencies.
+
 ## Reading resources recommended by the instructor
 
 These are references for learning the algorithms, not a claim that their

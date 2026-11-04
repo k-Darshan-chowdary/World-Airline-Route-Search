@@ -99,6 +99,12 @@ if(BUILD_TESTING)
         -m py_compile
         "${CMAKE_CURRENT_SOURCE_DIR}/python/gui/presentation.py")
 
+    add_test(NAME cpp_gui_window COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cpp/tests/test_gui_window.py"
+        "$<TARGET_FILE:airline_graph_cli>")
+    set_tests_properties(cpp_gui_window PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen" SKIP_RETURN_CODE 77)
+
     add_test(NAME cpp_graph_size_checks COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/cpp/tests/test_graph_sizes.py"
         "$<TARGET_FILE:airline_graph_cli>")

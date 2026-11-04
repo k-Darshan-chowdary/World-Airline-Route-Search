@@ -140,7 +140,7 @@ class MainWindow(QMainWindow):
         "q1": (("from", "From city"), ("to", "Destination")),
         "q2": (("from", "From city"), ("via_b", "Required city B"),
                ("via_c", "Required city C"), ("to", "Destination")),
-        "q3": (("round_trip", "Start and finish")),
+        "q3": (("round_trip", "Start and finish"),),
         "q4": (("meeting_a", "Traveler A"), ("meeting_b", "Traveler B"),
                ("meeting_c", "Traveler C")),
     }
@@ -379,6 +379,7 @@ class MainWindow(QMainWindow):
                     elif preferred in names:
                         widget.setCurrentText(preferred)
             self.reset_result(f"Loaded {len(names)} cities.")
+            self.search_button.setEnabled(True)
             self.clear_map()
         except Exception as exc:
             self.city_rows = []
@@ -488,6 +489,10 @@ class MainWindow(QMainWindow):
     def clear_map(self) -> None:
         if self.result_dialog is not None:
             return
+        self.map_blank.setText(
+            "Run a search to display a route map.\n"
+            "The map shows graph connections, not airline schedules."
+        )
         if self.map_view is not None:
             self.map_view.hide()
         self.map_blank.show()
