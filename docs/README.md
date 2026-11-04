@@ -6,6 +6,8 @@
 - [Dataset setup](../TEAM_DATASET_SETUP.md): current main-branch onboarding and checksum verification.
 - [Backend contract v1](backend_api_contract.md): C++ interfaces, JSON, Python adapter and metadata joins.
 - [Team backend handoff](team_backend_handoff.md): compiler setup, integration and remaining responsibilities.
+- [Desktop GUI demonstration](gui_walkthrough.md): Q1–Q4 demo cases, map legend, graph-size timings, and Windows visual checks.
+- [Q3/Q4 algorithms](q3_q4_algorithms.md): exact versus heuristic round-trip searches and three-source meeting city search.
 - [Data sources and filtering](phase3_import.md): pinned observations, import policy, limitations and redistribution.
 - [Original team roles](../Airline_Team_Roles.docx)
 - [Printable dataset guide](Teammate_Dataset_Setup_Guide.docx): preserved Phase 3 guide; follow the current Markdown setup for branch instructions.
