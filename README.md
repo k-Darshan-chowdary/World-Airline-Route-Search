@@ -4,8 +4,8 @@ A three-person university DSA project that uses a directed graph to search for
 routes between cities. The C++17 backend loads city and route data, finds routes
 with BFS, and returns readable output or JSON for the planned Python GUI.
 
-The backend and dataset setup are complete through Phase 7. Q3/Q4 and the GUI
-are still pending. This project studies **historical observed connectivity**;
+The original Q1/Q2 backend and dataset are complete through Phase 7. Q3/Q4
+and a GUI prototype have been implemented in the integration branch. The GUI still needs a Windows visual check. This project studies **historical observed connectivity**;
 it does not provide current schedules, fares, available seats or bookings.
 
 ## Project status
@@ -16,9 +16,9 @@ it does not provide current schedules, fares, available seats or bookings.
 | Q1: shortest route with fewer than `x` connections | Person 1 | Complete |
 | Q2: shortest walk through two required cities, in either order | Person 1 | Complete |
 | JSON v1 contract and Python adapter | Person 1 | Complete |
-| Q3: closed walk visiting reachable cities | Person 2 | Pending |
-| Q4: meeting-city search | Person 2 | Pending |
-| PySide6 GUI and Folium / Qt WebEngine maps | Person 3 | Pending |
+| Q3: closed walk visiting reachable cities | Advanced routing | Implemented; exact at small sizes, heuristic at larger sizes |
+| Q4: meeting-city search | Advanced routing | Implemented and tested |
+| PySide6 GUI and Folium / Qt WebEngine maps | Desktop interface | Implemented; live Windows validation pending |
 
 See the [team roles](Airline_Team_Roles.docx) and
 [backend handoff](docs/team_backend_handoff.md) for responsibilities and integration.
@@ -59,6 +59,48 @@ from callsigns, and retained record counts are not flight frequencies. Map
 coordinates represent one retained airport per city; sample coordinates are
 approximate city centers. Missing routes do not prove that no service exists.
 Read the [source and filtering notes](docs/phase3_import.md) before using the data.
+
+## Q3/Q4 and the desktop GUI
+
+The project includes Q3/Q4 implementations and an optional desktop interface.
+The C++ algorithms are covered by cross-platform tests; live GUI validation
+is a separate step.
+
+- **Q3:** an exact shortest round trip visiting every reachable city when the
+  reachable graph has at most 14 cities, returning to the start **only at the end**. Larger graphs use a clearly labeled
+  **heuristic**; its route is not guaranteed to be the shortest and it can fail to find a valid tour. A route is
+  impossible if a reachable city cannot return to the start.
+- **Q4:** find a meeting city distinct from all three origins that minimizes
+  the sum of directed shortest flight counts from the three origins.
+- **GUI:** PySide6 forms for Q1–Q4, a nonblocking C++ subprocess call, displayed
+  JSON, and optional Folium map lines for returned routes (three colors for Q4). Maps show city-level
+  graph edges between representative coordinates, not actual flight tracks.
+
+CLI examples (after compiling this branch):
+
+```cmd
+build\airline_graph.exe --data-dir data/sample --round-trip "Auckland, New Zealand" --json
+build\airline_graph.exe --data-dir data/sample --meeting-a "Dallas, United States" --meeting-b "New York, United States" --meeting-c "London, United Kingdom" --json
+```
+
+Run the optional GUI from the repository root on Windows after installing the
+regular C++ build and Python 3.13 environment:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-gui.txt
+.\.venv\Scripts\python.exe -m python.gui.app
+```
+
+The GUI loads the included small sample by default, and offers the historical
+data when `data/generated/2026-q3/cities.tsv` is present. It needs a compiled
+`airline_graph` executable in a documented build location. WebEngine and map
+tiles may require internet access. If the window or map fails, use the tested
+CLI for the final demonstration rather than claim the GUI is verified.
+
+See [Q3/Q4 algorithm details](docs/q3_q4_algorithms.md).
+The professor's Q3 asks for the *minimum*; its exactness restriction must be
+disclosed during the demo and in the presentation. Team members should review
+and understand their assigned features before submission.
 
 ## Quick start
 
