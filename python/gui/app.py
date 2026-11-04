@@ -11,7 +11,7 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt, QThread, Signal, QUrl
 from PySide6.QtWidgets import (
-    QApplication, QComboBox, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
+    QApplication, QComboBox, QDialog, QFormLayout, QLabel,
     QMainWindow, QMessageBox, QPushButton, QSpinBox, QSplitter, QTabWidget,
     QTextEdit, QVBoxLayout, QWidget,
 )
@@ -64,6 +64,8 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("World Airline Route Search — CSCE 2110")
         self.resize(1250, 740)
         self.worker = None
+        self.results_popup = None
+        self.map_html = None
         self.city_rows = []
         self.combo_fields = {}
         self.inputs = {}
@@ -234,8 +236,33 @@ class MainWindow(QMainWindow):
                 f"{result.get('flights')} flights{mode}"
             )
         self.update_map(result)
+        self.show_results_popup(result)
+
+    def show_results_popup(self, result: dict):
+        """Show the requested results in a separate readable map window."""
+        if self.results_popup is not None:
+            self.results_popup.close()
+        popup = QDialog(self)
+        popup.setWindowTitle("Route search result — " + result["query"].upper())
+        popup.resize(970, 650)
+        layout = QVBoxLayout(popup)
+        message = QLabel(self.summary.text())
+        message.setWordWrap(True)
+        message.setStyleSheet("font-size: 16px; font-weight: 600; padding: 8px;")
+        layout.addWidget(message)
+        if QWebEngineView is not None and self.map_html is not None:
+            preview = QWebEngineView(popup)
+            preview.setHtml(self.map_html, QUrl("https://localhost/"))
+        else:
+            preview = QTextEdit(popup)
+            preview.setReadOnly(True)
+            preview.setPlainText(json.dumps(result, ensure_ascii=False, indent=2))
+        layout.addWidget(preview)
+        popup.show()
+        self.results_popup = popup
 
     def update_map(self, result: dict):
+        self.map_html = None
         if QWebEngineView is None or folium is None:
             if QWebEngineView is not None:
                 self.map_view.setHtml(
@@ -278,7 +305,8 @@ class MainWindow(QMainWindow):
                     folium.Marker(point, tooltip=node["city"]).add_to(fmap)
                 if len(coords) >= 2:
                     folium.PolyLine(coords, color="#1479b8", weight=4).add_to(fmap)
-            self.map_view.setHtml(fmap.get_root().render(), QUrl("https://localhost/"))
+            self.map_html = fmap.get_root().render()
+            self.map_view.setHtml(self.map_html, QUrl("https://localhost/"))
         except Exception as exc:
             self.map_view.setHtml(
                 "<html><body><h3>Map unavailable</h3>"
