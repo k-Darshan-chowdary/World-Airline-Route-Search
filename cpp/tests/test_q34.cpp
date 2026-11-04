@@ -40,6 +40,9 @@ int main() {
         check(r.city && *r.city==3,"tie broken by smallest city ID");
         check(r.totalFlights && *r.totalFlights==3,"meeting sum three");
         check(r.fromA==1 && r.fromB==1 && r.fromC==1,"meeting distances");
+        check(r.pathFromA==std::vector<CityId>{0,3}, "traveller A path");
+        check(r.pathFromB==std::vector<CityId>{1,3}, "traveller B path");
+        check(r.pathFromC==std::vector<CityId>{2,3}, "traveller C path");
         check(!findMeetingCity(g,0,1,5).city,"no common reachable candidate");
         try { (void)findMeetingCity(g,0,1,10); throw std::runtime_error("bad ID not rejected");}
         catch(const std::out_of_range&) {}
@@ -58,7 +61,7 @@ int main() {
         Graph g = create(4);
         g.addEdge(0,1);g.addEdge(1,2);
         auto r = findRoundTrip(g,0);
-        check(r.status==RoundTripStatus::NoReturn,"dead end forbids closed walk");
+        check(r.status==RoundTripStatus::NoTour,"dead end forbids closed walk");
         check(r.reachableCities==3,"reachable count");
     }
     {
@@ -81,7 +84,8 @@ int main() {
         g.addEdge(2,3);g.addEdge(3,0);
         auto r=findRoundTrip(g,0);
         checkWalk(g,r,0,4);
-        check(r.method==RoundTripMethod::Exact && r.flights==6,"exact best walk with revisit");
+        check(r.status==RoundTripStatus::NoTour,
+              "no tour can revisit the origin before every city is covered");
     }
     std::cout<<"Q3/Q4 DSA unit tests passed\n";
 }
