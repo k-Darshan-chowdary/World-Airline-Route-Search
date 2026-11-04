@@ -1,0 +1,4 @@
+# GUI dependencies; Python 3.13 x64 recommended.
+PySide6>=6.8,<7
+folium>=0.18,<1
+# WebEngine is included in standard PySide6 distributions on supported wheels.
