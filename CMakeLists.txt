@@ -11,6 +11,8 @@ add_library(airline_graph
     cpp/src/BFS.cpp
     cpp/src/RouteSearch.cpp
     cpp/src/RequiredStops.cpp
+    cpp/src/MeetingCity.cpp
+    cpp/src/RoundTrip.cpp
 )
 target_include_directories(airline_graph PUBLIC cpp/include)
 target_compile_features(airline_graph PUBLIC cxx_std_17)
@@ -70,6 +72,11 @@ if(BUILD_TESTING)
     add_test(NAME cpp_backend_contract COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/cpp/tests/test_backend_contract.py"
         "$<TARGET_FILE:airline_graph_cli>" "${CMAKE_CURRENT_SOURCE_DIR}/data/sample")
+
+    add_executable(airline_q34_tests cpp/tests/test_q34.cpp)
+    target_link_libraries(airline_q34_tests PRIVATE airline_graph)
+    airline_warnings(airline_q34_tests)
+    add_test(NAME cpp_q34_tests COMMAND airline_q34_tests)
 
     # Explicit opt-in: normal offline CI needs no worldwide download. A supplied
     # directory is mandatory and must match the existing Phase 3 checksum lock.
