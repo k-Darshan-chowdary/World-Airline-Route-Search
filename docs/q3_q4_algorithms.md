@@ -1,6 +1,4 @@
-# Q3 and Q4 algorithms — urgent team integration
-
-Work in progress for the November 7 CSCE 2110 submission. The implementation is on a review branch, not yet merged. Person 2 should review, run, and be prepared to explain these algorithms rather than claiming work they did not do.
+# Q3 and Q4 algorithms
 
 ## Q3: start in A, visit every reachable city, return to A only at the end
 
@@ -47,7 +45,7 @@ Expected: Paris, France, total cost 6 legs (3 + 2 + 1).
 - Q4 JSON adds `query:"q4"`, `status`, `meeting_city`, `total_flights`, `distances`, and three `routes` arrays for blue/orange/purple map polylines. No result uses null meeting city and totals.
 - Both queries include `schema_version:1` and historical-observed-connectivity caveat.
 - `cpp/tests/test_q34.cpp` exercises exact/heuristic limits, no-return cases, deterministic Q4 ties and directed reachability. `cpp/tests/test_q34_cli.py` checks JSON subprocess outputs on synthetic data.
-- Build and test with CMake/CTest, then the preserved dataset Python suite; run official-data checks when the local checksum-locked dataset exists. Cross-platform CI needs to pass before merge.
+- Build and test with CMake/CTest, then the preserved dataset Python suite; run official-data checks when the local checksum-locked dataset exists. Cross-platform CI and a live GUI demonstration are required for final acceptance.
 - The source is incomplete historical observed connectivity, **not live schedules or bookable flights**.
 
 Person 3's GUI should present heuristic outputs as approximate and never label them as guaranteed optimal.
