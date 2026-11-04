@@ -99,6 +99,10 @@ if(BUILD_TESTING)
         -m py_compile
         "${CMAKE_CURRENT_SOURCE_DIR}/python/gui/presentation.py")
 
+    add_test(NAME cpp_graph_size_checks COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cpp/tests/test_graph_sizes.py"
+        "$<TARGET_FILE:airline_graph_cli>")
+
     # Explicit opt-in: normal offline CI needs no worldwide download. A supplied
     # directory is mandatory and must match the existing Phase 3 checksum lock.
     set(AIRLINE_GLOBAL_DATA_DIR "" CACHE PATH "Official generated Phase 3 dataset to verify")
