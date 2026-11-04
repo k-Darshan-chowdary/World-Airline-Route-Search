@@ -99,6 +99,18 @@ class PresentationTests(unittest.TestCase):
         self.assertEqual([color for _, color in result.legend], list(Q4_COLORS.values()))
         self.assertIn("6 flight legs · 3 connections", result.metric)
 
+    def test_long_round_trip_is_readable(self):
+        nodes = [city(f"Long City {i}, Testland", i) for i in range(40)]
+        nodes.append(nodes[0])
+        result = describe_result({
+            "query": "q3", "status": "found", "flights": 40,
+            "reachable_cities": 40, "method": "heuristic", "optimal": False,
+            "route": nodes,
+        })
+        self.assertLess(len(result.lines[0]), 260)
+        self.assertIn("full path in JSON", result.lines[0])
+        self.assertIn("not guaranteed", result.warning)
+
     def test_no_meeting(self):
         result = describe_result({"query": "q4", "status": "unreachable"})
         self.assertIn("meeting", result.title.lower())
