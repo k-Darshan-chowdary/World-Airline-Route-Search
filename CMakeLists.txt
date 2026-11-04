@@ -81,6 +81,14 @@ if(BUILD_TESTING)
         "${CMAKE_CURRENT_SOURCE_DIR}/cpp/tests/test_q34_cli.py"
         "$<TARGET_FILE:airline_graph_cli>" "${CMAKE_CURRENT_SOURCE_DIR}/data/sample")
 
+    add_test(NAME cpp_gui_backend_bridge COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cpp/tests/test_gui_bridge.py"
+        "$<TARGET_FILE:airline_graph_cli>" "${CMAKE_CURRENT_SOURCE_DIR}/data/sample")
+    add_test(NAME cpp_gui_syntax COMMAND "${Python3_EXECUTABLE}"
+        -m py_compile
+        "${CMAKE_CURRENT_SOURCE_DIR}/python/gui/app.py"
+        "${CMAKE_CURRENT_SOURCE_DIR}/python/gui/route_bridge.py")
+
     # Explicit opt-in: normal offline CI needs no worldwide download. A supplied
     # directory is mandatory and must match the existing Phase 3 checksum lock.
     set(AIRLINE_GLOBAL_DATA_DIR "" CACHE PATH "Official generated Phase 3 dataset to verify")
