@@ -10,7 +10,25 @@
 namespace airline {
 namespace {
 constexpr std::size_t EXACT_LIMIT = 14;
-struct State { CityId at; std::uint32_t mask; };
+// Disallow returning to the start while selecting the next required city.
+// A final return is performed separately when every city has been visited.
+BFSResult bfsAvoidStart(const Graph& graph, CityId origin, CityId start) {
+    BFSResult result{origin, std::vector<int>(graph.cityCount(), -1),
+                     std::vector<CityId>(graph.cityCount(), -1)};
+    std::queue<CityId> pending;
+    pending.push(origin);
+    result.distance[origin] = 0;
+    while (!pending.empty()) {
+        const CityId city = pending.front(); pending.pop();
+        for (const CityId next : graph.neighbors(city)) {
+            if (next == start || result.distance[next] != -1) continue;
+            result.parent[next] = city;
+            result.distance[next] = result.distance[city] + 1;
+            pending.push(next);
+        }
+    }
+    return result;
+}
 }
 
 RoundTripResult findRoundTrip(const Graph& graph, CityId start) {
@@ -71,7 +89,7 @@ RoundTripResult findRoundTrip(const Graph& graph, CityId start) {
             for (CityId neighbor : graph.neighbors(reachable[at])) {
                 const int next = index[neighbor];
                 if (next < 0) continue;
-                const std::size_t nextMask = mask | (std::size_t(1) << next);
+                const std::size_t nextMask = mask | (std::size_t(1) << next);\n                if (neighbor == start && nextMask != full) continue;
                 const auto nk = key(next, nextMask);
                 if (seen[nk]) continue;
                 seen[nk] = 1;
@@ -96,7 +114,7 @@ RoundTripResult findRoundTrip(const Graph& graph, CityId start) {
         CityId here = start;
         answer.path.push_back(start);
         while (count < reachable.size()) {
-            const auto paths = bfs(graph, here);
+            const auto paths = bfsAvoidStart(graph, here, start);
             CityId next = -1;
             int shortest = std::numeric_limits<int>::max();
             for (CityId candidate : reachable) {
@@ -106,7 +124,11 @@ RoundTripResult findRoundTrip(const Graph& graph, CityId start) {
                     shortest = distance; next = candidate;
                 }
             }
-            if (next == -1) return answer;
+            if (next == -1) {
+                answer.status = RoundTripStatus::HeuristicFailed;
+                answer.path.clear();
+                return answer;
+            }
             const auto segment = paths.pathTo(next);
             for (std::size_t i = 1; i < segment.size(); ++i) {
                 answer.path.push_back(segment[i]);
@@ -115,7 +137,11 @@ RoundTripResult findRoundTrip(const Graph& graph, CityId start) {
             here = next;
         }
         const auto back = bfs(graph, here).pathTo(start);
-        if (back.empty()) return answer;
+        if (back.empty()) {
+            answer.status = RoundTripStatus::HeuristicFailed;
+            answer.path.clear();
+            return answer;
+        }
         answer.path.insert(answer.path.end(), back.begin() + 1, back.end());
     }
     answer.status = RoundTripStatus::Found;
