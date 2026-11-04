@@ -26,7 +26,13 @@ Q4_COLORS = {
 
 
 def route_names(nodes: list[dict]) -> str:
-    return " → ".join(node["city"] for node in nodes)
+    text = " → ".join(node["city"] for node in nodes)
+    if len(text) <= 250:
+        return text
+    # Keep long Q3 tours readable. The original complete route stays in
+    # the expandable JSON rather than taking over the entire window.
+    visible = " → ".join(node["city"] for node in nodes[:5])
+    return f"{visible} → … ({len(nodes)} route points; full path in JSON)"
 
 
 def describe_result(result: dict) -> RouteSummary:
