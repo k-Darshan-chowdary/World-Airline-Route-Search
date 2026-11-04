@@ -19,7 +19,7 @@ This is an action checklist for the three-person team, not a claim that unchecke
 - [ ] Build Debug and Release and run the original offline Python suite and every CTest target.
 - [ ] Validate the checksum-locked 819-city dataset locally if present.
 - [ ] Run Q1/Q2/Q3/Q4 from a fresh checkout against the submitted fixture.
-- [ ] Verify UTF-8 labels, Q3 approximation disclosures, Q4 directed-distance semantics and map labels.
+- [ ] Verify UTF-8 labels, Q3 return-only-at-end and approximation disclosures, Q4 three colored paths, directed-distance semantics and map labels.
 - [ ] Inspect contributors' own work; fix regressions before presentation screenshots.
 
 ## November 6 — Presentation and packaging
