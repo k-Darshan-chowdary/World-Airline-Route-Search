@@ -244,20 +244,40 @@ class MainWindow(QMainWindow):
                 )
             return
         try:
-            locations = route_coordinates(result, self.city_rows)
-            markers = list(result.get("route", []))
+            fmap = folium.Map(location=[20, 0], zoom_start=2)
             if result.get("query") == "q4" and result.get("meeting_city"):
+                # Each colored line is an actual shortest directed path in
+                # our city-level graph, not a fabricated direct flight.
+                color_by_origin = {
+                    "from_a": "#1d4ed8",
+                    "from_b": "#ea580c",
+                    "from_c": "#9333ea",
+                }
+                for origin, color in color_by_origin.items():
+                    nodes = result.get("routes", {}).get(origin, [])
+                    coords = route_coordinates({"route": nodes}, self.city_rows)
+                    if len(coords) >= 2:
+                        folium.PolyLine(
+                            coords, color=color, weight=5, opacity=0.85,
+                            tooltip=origin.replace("_", " ").upper(),
+                        ).add_to(fmap)
                 names = [result["from_a"], result["from_b"], result["from_c"],
                          result["meeting_city"]["city"]]
-                by_name = {x["city"]: x for x in self.city_rows}
-                markers = [{"id": by_name[name]["id"], "city": name}
-                           for name in names]
-                locations = route_coordinates({"route": markers}, self.city_rows)
-            fmap = folium.Map(location=[20, 0], zoom_start=2)
-            for item, (lat, lon) in zip(markers, locations):
-                folium.Marker([lat, lon], tooltip=item["city"]).add_to(fmap)
-            if len(locations) >= 2 and result.get("query") != "q4":
-                folium.PolyLine(locations, color="#1479b8", weight=4).add_to(fmap)
+                lookup = {row["city"]: row for row in self.city_rows}
+                for name in dict.fromkeys(names):
+                    item = lookup[name]
+                    is_meeting = name == result["meeting_city"]["city"]
+                    folium.Marker(
+                        [item["latitude"], item["longitude"]],
+                        tooltip=("Meeting city: " if is_meeting else "Origin: ") + name,
+                        icon=folium.Icon(color="green" if is_meeting else "blue"),
+                    ).add_to(fmap)
+            else:
+                coords = route_coordinates(result, self.city_rows)
+                for node, point in zip(result.get("route", []), coords):
+                    folium.Marker(point, tooltip=node["city"]).add_to(fmap)
+                if len(coords) >= 2:
+                    folium.PolyLine(coords, color="#1479b8", weight=4).add_to(fmap)
             self.map_view.setHtml(fmap.get_root().render(), QUrl("https://localhost/"))
         except Exception as exc:
             self.map_view.setHtml(
