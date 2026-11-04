@@ -95,10 +95,18 @@ def describe_result(result: dict) -> RouteSummary:
             distance = result["distances"][key]
             lines.append(f"{label}: {route_names(path)} ({distance} flights)")
             legend.append((label, Q4_COLORS[key]))
+        # Each origin is distinct from the meeting city, so every
+        # successful route contains at least one flight. Subtracting one
+        # connection per traveler preserves the meeting-city ranking.
+        connection_count = sum(
+            max(result["distances"][key] - 1, 0)
+            for key in ("from_a", "from_b", "from_c")
+        )
         return RouteSummary(
             f"Meet in {result['meeting_city']['city']}",
-            "The meeting city minimizes the sum of directed flight legs from all three origins.",
-            f"{result['total_flights']} total flight legs",
+            "Minimizes the combined number of directed flight legs. "
+            "Connections count only intermediate stops.",
+            f"{result['total_flights']} flight legs · {connection_count} connections",
             tuple(lines),
             tuple(legend),
         )
