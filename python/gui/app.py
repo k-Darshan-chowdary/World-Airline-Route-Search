@@ -104,7 +104,8 @@ class MapDialog(QDialog):
     """The existing map widget is moved here, not rendered twice."""
 
     def __init__(self, parent: QWidget, title: str, metric: str,
-                 detail: str, notes: tuple[str, ...], map_widget: QWidget) -> None:
+                 detail: str, notes: tuple[str, ...],
+                 legend: tuple[tuple[str, str], ...], map_widget: QWidget) -> None:
         super().__init__(parent)
         self.setWindowTitle("Route search result — " + title)
         self.resize(1040, 710)
@@ -119,6 +120,13 @@ class MapDialog(QDialog):
             notes_label = label("\n".join(notes[:10]), name="resultDescription")
             notes_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
             layout.addWidget(notes_label)
+        if legend:
+            dots = label(" · ".join(
+                '<span style="color:' + color + '">●</span> ' + html.escape(name)
+                for name, color in legend
+            ))
+            dots.setTextFormat(Qt.TextFormat.RichText)
+            layout.addWidget(dots)
         map_widget.setParent(self)
         layout.addWidget(map_widget, 1)
         layout.addWidget(label(
@@ -149,6 +157,7 @@ class MainWindow(QMainWindow):
         self.worker: SearchWorker | None = None
         self.result_dialog: MapDialog | None = None
         self.selected_question = "q1"
+        self.last_summary = None
         self.city_rows: list[dict] = []
         self.inputs: dict[str, dict] = {}
 
@@ -423,6 +432,7 @@ class MainWindow(QMainWindow):
 
     def display_result(self, result: dict, milliseconds: float) -> None:
         summary = describe_result(result)
+        self.last_summary = summary
         self.result_title.setText(summary.title)
         self.result_metric.setText(summary.metric)
         self.result_detail.setText(summary.detail)
@@ -547,7 +557,9 @@ class MainWindow(QMainWindow):
         notes = tuple(self.result_lines.text().split("\n\n")) if self.result_lines.isVisible() else ()
         self.result_dialog = MapDialog(
             self, self.result_title.text(), self.result_metric.text(),
-            self.result_detail.text(), notes, self.map_view
+            self.result_detail.text(), notes,
+            self.last_summary.legend if self.last_summary is not None else (),
+            self.map_view
         )
         self.result_dialog.finished.connect(self.restore_map)
         self.result_dialog.show()
