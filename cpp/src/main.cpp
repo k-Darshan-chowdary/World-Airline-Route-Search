@@ -106,7 +106,7 @@ int run(const std::vector<std::string>& args) {
                              "Q1 requires connections < X; direct flight = 0 connections.\n"
                              "X must be decimal digits in [0, 9223372036854775807].\n"
                              "Q2 visits both required cities in either order, minimizing flights; repeated visits are allowed.\n"
-                             "Q3: --round-trip CITY; return to start only at end (exact <=14; heuristic above).\n"
+                             "Q3: --round-trip CITY; return to start only at end (exact up to 18 cities; large tours not necessarily shortest).\n"
                              "Q4: --meeting-a CITY --meeting-b CITY --meeting-c CITY.\n";
                 if (json) std::cout << "{\"schema_version\":1,\"status\":\"help\",\"usage\":" << jsonString(usage) << "}\n";
                 else std::cout << usage;
