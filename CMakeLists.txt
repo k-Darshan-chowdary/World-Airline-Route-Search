@@ -93,6 +93,22 @@ if(BUILD_TESTING)
         "${CMAKE_CURRENT_SOURCE_DIR}/cpp/tests/test_q34_oracle.py"
         "$<TARGET_FILE:airline_graph_cli>")
 
+    add_test(NAME cpp_gui_presentation COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cpp/tests/test_gui_presentation.py")
+    add_test(NAME cpp_gui_v2_syntax COMMAND "${Python3_EXECUTABLE}"
+        -m py_compile
+        "${CMAKE_CURRENT_SOURCE_DIR}/python/gui/presentation.py")
+
+    add_test(NAME cpp_gui_window COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cpp/tests/test_gui_window.py"
+        "$<TARGET_FILE:airline_graph_cli>")
+    set_tests_properties(cpp_gui_window PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen" SKIP_RETURN_CODE 77)
+
+    add_test(NAME cpp_graph_size_checks COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cpp/tests/test_graph_sizes.py"
+        "$<TARGET_FILE:airline_graph_cli>")
+
     # Explicit opt-in: normal offline CI needs no worldwide download. A supplied
     # directory is mandatory and must match the existing Phase 3 checksum lock.
     set(AIRLINE_GLOBAL_DATA_DIR "" CACHE PATH "Official generated Phase 3 dataset to verify")

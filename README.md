@@ -2,10 +2,11 @@
 
 A three-person university DSA project that uses a directed graph to search for
 routes between cities. The C++17 backend loads city and route data, finds routes
-with BFS, and returns readable output or JSON for the planned Python GUI.
+with BFS, and returns readable output or JSON for the Python desktop GUI.
 
-The original Q1/Q2 backend and dataset are complete through Phase 7. Q3/Q4
-and a GUI prototype have been implemented in the integration branch. The GUI still needs a Windows visual check. This project studies **historical observed connectivity**;
+The C++ backend implements all four questions. The GUI V2 has Windows Qt
+runtime coverage and was visually checked before this Q3 integration; the
+combined version should be visually verified again. This project studies **historical observed connectivity**;
 it does not provide current schedules, fares, available seats or bookings.
 
 ## Project status
@@ -16,9 +17,9 @@ it does not provide current schedules, fares, available seats or bookings.
 | Q1: shortest route with fewer than `x` connections | Person 1 | Complete |
 | Q2: shortest walk through two required cities, in either order | Person 1 | Complete |
 | JSON v1 contract and Python adapter | Person 1 | Complete |
-| Q3: closed walk visiting reachable cities | Advanced routing | Implemented; exact at ≤18 reachable cities, feasible tours proven at larger sizes (length approximate) |
+| Q3: closed walk visiting reachable cities | Advanced routing | Implemented; exact up to 18 reachable cities, large-tour feasibility proven |
 | Q4: meeting-city search | Advanced routing | Implemented and tested |
-| PySide6 GUI and Folium / Qt WebEngine maps | Desktop interface | Implemented; live Windows validation pending |
+| PySide6 GUI and Folium / Qt WebEngine maps | Desktop interface | Implemented; Windows Qt runtime-tested, combined version pending visual check |
 
 See the [team roles](Airline_Team_Roles.docx) and
 [backend handoff](docs/team_backend_handoff.md) for responsibilities and integration.
@@ -63,8 +64,8 @@ Read the [source and filtering notes](docs/phase3_import.md) before using the da
 ## Q3/Q4 and the desktop GUI
 
 The project includes Q3/Q4 implementations and an optional desktop interface.
-The C++ algorithms are covered by cross-platform tests; live GUI validation
-is a separate step.
+The C++ algorithms have cross-platform tests. The GUI has Windows Qt runtime
+coverage; real map-tile display still needs a visual check on the user's PC.
 
 - **Q3:** shortest end-only round trip using an exact state-space BFS for up to
   **18 reachable cities**. On larger graphs, strongly connected components
@@ -74,11 +75,13 @@ is a separate step.
   to the start makes a tour impossible, but that is not the only no-tour case.
 - **Q4:** find a meeting city distinct from all three origins that minimizes
   the sum of directed shortest flight counts from the three origins.
-- **GUI:** PySide6 forms for Q1–Q4, a nonblocking C++ subprocess call, displayed
-  JSON, and optional Folium map lines for returned routes (three colors for Q4). Maps show city-level
-  graph edges between representative coordinates, not actual flight tracks.
+- **GUI:** four always-visible question buttons, concise route results, a separate
+  enlarged result/map window, and an optional collapsible JSON view. Searches run
+  the compiled C++ backend in a background thread. Q4 routes are colored by
+  traveler and labeled in a legend. Map lines connect representative city
+  coordinates, not measured aircraft tracks.
 
-CLI examples (after compiling this branch):
+CLI examples (after building the C++ program):
 
 ```cmd
 build\airline_graph.exe --data-dir data/sample --round-trip "Auckland, New Zealand" --json
@@ -99,9 +102,30 @@ data when `data/generated/2026-q3/cities.tsv` is present. It needs a compiled
 tiles may require internet access. If the window or map fails, use the tested
 CLI for the final demonstration rather than claim the GUI is verified.
 
+For a guided tour of each question and screenshots, see
+[GUI demonstration and testing](docs/gui_walkthrough.md). The interface
+distinguishes **flights/edges** from **intermediate connections**, and marks
+large-graph Q3 output as heuristic rather than proven shortest.
+
+To print the sample graph's stored input connections for inspection, run
+`type data\\sample\\flight.txt` in Windows CMD. The input uses one
+tab-separated directed connection per line. The sample and global data
+include cities with no outgoing flights when present in the metadata.
+
+To run the repeatable 6, 18, 20 and 50-vertex examples and print measured
+end-to-end runtimes (including process startup and file loading), run:
+
+```cmd
+.\.venv\Scripts\ctest.exe --test-dir build -V -R cpp_graph_size_checks
+```
+
+Actual times depend on the machine; record your own measured output for the
+presentation instead of using an estimated runtime.
+
 See [Q3/Q4 algorithm details](docs/q3_q4_algorithms.md).
-The professor's Q3 asks for the *minimum*; its exactness restriction must be
-disclosed during the demo and in the presentation. Team members should review
+The professor's Q3 asks for the *minimum*: we prove that for at most 18
+reachable cities. Larger-graph tours have proven feasibility but approximate
+length, which must be stated in the presentation. Team members should review
 and understand their assigned features before submission.
 
 ## Quick start
